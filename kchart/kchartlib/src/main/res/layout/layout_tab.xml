@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#30343C"
+    android:gravity="center_vertical">
+
+    <LinearLayout
+        android:id="@+id/ll_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:dividerPadding="5dp">
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_fullScreen"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:text="切屏"
+            android:textColor="@color/chart_white"
+            android:layout_alignParentRight="true"
+            android:paddingRight="15dp"
+            android:gravity="center" />
+    </RelativeLayout>
+</LinearLayout>
