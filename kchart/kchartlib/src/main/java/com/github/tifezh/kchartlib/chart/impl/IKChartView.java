@@ -77,23 +77,20 @@ public interface IKChartView {
     float getX(int position);
 
     /**
-     * 获取主图的高度
-     *
-     * @return
-     */
-    int getMainHeight();
-
-    /**
-     * 获取tabbar的高度
-     *
-     * @return
-     */
-    int getTabBarHeight();
-
-    /**
      * 格式化value
      *
      * @param value
      */
     String formatValue(float value);
+
+    /**
+     * 开始动画效果
+     */
+    void startAnimation();
+
+    /**
+     * 设置动画时间
+     * @param duration 时间(毫秒)
+     */
+    void setAnimationDuration(long duration);
 }

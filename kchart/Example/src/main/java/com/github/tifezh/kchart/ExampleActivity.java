@@ -50,23 +50,36 @@ public class ExampleActivity extends AppCompatActivity {
     }
 
     private void initData() {
-        String fileName = "data.json"; //k线图的数据
-        String res = "";
-        try {
-            InputStream in = getResources().getAssets().open(fileName);
-            int length = in.available();
-            byte[] buffer = new byte[length];
-            in.read(buffer);
-            res = EncodingUtils.getString(buffer, "UTF-8");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        List<KLineEntity> data = new Gson().fromJson(res, new TypeToken<List<KLineEntity>>() {
-        }.getType());
         mAdapter = new KChartAdapter();
         mKChartView.setAdapter(mAdapter);
-        mAdapter.addFooterData(data);
         mKChartView.setDateTimeFormatter(new DateFormatter());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String fileName = "ibm.json"; //k线图的数据
+                String res = "";
+                try {
+                    InputStream in = getResources().getAssets().open(fileName);
+                    int length = in.available();
+                    byte[] buffer = new byte[length];
+                    in.read(buffer);
+                    res = EncodingUtils.getString(buffer, "UTF-8");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                final List<KLineEntity> data = new Gson().fromJson(res, new TypeToken<List<KLineEntity>>() {
+                }.getType());
+                DataHelper.calculate(data);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAdapter.addFooterData(data);
+                        mKChartView.startAnimation();
+                    }
+                });
+            }
+        }).start();
+
     }
 
     @Override

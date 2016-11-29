@@ -1,5 +1,6 @@
 package com.github.tifezh.kchartlib.chart;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
@@ -7,7 +8,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.ViewGroup;
@@ -112,6 +112,9 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
 
     protected KChartTabView mKChartTabView;
 
+    private ValueAnimator mAnimator;
+
+    long mAnimationDuration = 500;
     public BaseKChart(Context context) {
         super(context);
         init();
@@ -151,6 +154,16 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
                 setChildDraw(type);
             }
         });
+
+        mAnimator = ValueAnimator.ofFloat(0f, 1f);
+        mAnimator.setDuration(mAnimationDuration);
+        mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                invalidate();
+            }
+        });
+        startAnimation();
     }
 
 
@@ -184,7 +197,6 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
             return;
         }
         calculateValue();
-        Log.i("mTranslateX", String.valueOf(mTranslateX) + "  " + mScrollX);
         canvas.save();
         canvas.translate(0, mTopPadding);
         canvas.scale(1, 1);
@@ -245,19 +257,18 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
         canvas.save();
         canvas.translate(mTranslateX * mScaleX, 0);
         canvas.scale(mScaleX, 1);
-        Object lastPoint = getItem(mStartIndex);
-        float lastX = getX(mStartIndex);
         for (int i = mStartIndex; i <= mStopIndex; i++) {
             Object currentPoint = getItem(i);
             float currentPointX = getX(i);
+            Object lastPoint = i == 0 ? currentPoint : getItem(i - 1);
+            float lastX = getX(i - 1);
             if (mMainDraw != null) {
                 mMainDraw.drawTranslated(lastPoint, currentPoint, lastX, currentPointX, canvas, this, i);
             }
             if (mChildDraw != null) {
                 mChildDraw.drawTranslated(lastPoint, currentPoint, lastX, currentPointX, canvas, this, i);
             }
-            lastPoint = currentPoint;
-            lastX = currentPointX;
+
         }
         //画选择线
         if (isLongPress) {
@@ -441,15 +452,14 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
                 mChildMinValue = Math.min(mChildMinValue, mChildDraw.getMinValue(point));
             }
         }
-        if (mMainMaxValue > mMainMinValue) {
-            mMainScaleY = mMainHeight * 1f / (mMainMaxValue - mMainMinValue);
-        } else {
-            mMainScaleY = 1;
-        }
-        if (mChildMinValue < mChildMaxValue) {
-            mChildScaleY = mChildHeight * 1f / (mChildMaxValue - mChildMinValue);
-        } else {
-            mChildScaleY = 1;
+        float padding = (mMainMaxValue - mMainMinValue) * 0.05f;
+        mMainMaxValue += padding;
+        mMainMinValue -= padding;
+        mMainScaleY = mMainHeight * 1f / (mMainMaxValue - mMainMinValue);
+        mChildScaleY = mChildHeight * 1f / (mChildMaxValue - mChildMinValue);
+        if (mAnimator.isRunning()) {
+            float value = (float) mAnimator.getAnimatedValue();
+            mStopIndex = mStartIndex + Math.round(value * (mStopIndex - mStartIndex));
         }
     }
 
@@ -517,7 +527,6 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
         return mAdapter;
     }
 
-    @Override
     public int getMainHeight() {
         return mMainHeight;
     }
@@ -656,4 +665,17 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
         notifyChanged();
     }
 
+    @Override
+    public void startAnimation() {
+        if (mAnimator != null) {
+            mAnimator.start();
+        }
+    }
+
+    @Override
+    public void setAnimationDuration(long duration) {
+        if (mAnimator != null) {
+            mAnimator.setDuration(duration);
+        }
+    }
 }

@@ -42,12 +42,18 @@ public class BOLLDraw extends BaseDraw<BOLLImpl> {
 
     @Override
     public float getMaxValue(BOLLImpl point) {
-        return Math.max(point.getUp(), Math.max(point.getMb(), point.getDn()));
+        if (Float.isNaN(point.getUp())) {
+            return point.getMb();
+        }
+        return point.getUp();
     }
 
     @Override
     public float getMinValue(BOLLImpl point) {
-        return Math.min(point.getUp(), Math.min(point.getMb(), point.getDn()));
+        if (Float.isNaN(point.getDn())) {
+            return point.getMb();
+        }
+        return point.getDn();
     }
 
 }
