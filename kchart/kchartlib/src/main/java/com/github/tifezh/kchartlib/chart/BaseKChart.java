@@ -261,7 +261,7 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
             Object currentPoint = getItem(i);
             float currentPointX = getX(i);
             Object lastPoint = i == 0 ? currentPoint : getItem(i - 1);
-            float lastX = getX(i - 1);
+            float lastX = i == 0 ? currentPointX : getX(i - 1);
             if (mMainDraw != null) {
                 mMainDraw.drawTranslated(lastPoint, currentPoint, lastX, currentPointX, canvas, this, i);
             }
@@ -634,6 +634,9 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
      * @return
      */
     public int indexOfTranslateX(float translateX, int start, int end) {
+        if (end == start) {
+            return start;
+        }
         if (end - start == 1) {
             float startValue = getX(start);
             float endValue = getX(end);
