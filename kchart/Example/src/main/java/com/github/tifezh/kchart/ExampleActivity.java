@@ -53,6 +53,8 @@ public class ExampleActivity extends AppCompatActivity {
         mAdapter = new KChartAdapter();
         mKChartView.setAdapter(mAdapter);
         mKChartView.setDateTimeFormatter(new DateFormatter());
+        mKChartView.setGridRows(4);
+        mKChartView.setGridColumns(4);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -85,10 +87,14 @@ public class ExampleActivity extends AppCompatActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {//当前为横屏
+        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             mLlStatus.setVisibility(View.GONE);
-        } else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {//当前为竖屏
+            mKChartView.setGridRows(3);
+            mKChartView.setGridColumns(8);
+        } else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             mLlStatus.setVisibility(View.VISIBLE);
+            mKChartView.setGridRows(4);
+            mKChartView.setGridColumns(4);
         }
     }
 }

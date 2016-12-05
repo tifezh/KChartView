@@ -114,7 +114,10 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
 
     private ValueAnimator mAnimator;
 
-    long mAnimationDuration = 500;
+    private long mAnimationDuration = 500;
+
+    private int mBackgroundColor = Color.parseColor("#202326");
+
     public BaseKChart(Context context) {
         super(context);
         init();
@@ -179,20 +182,10 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
         setTranslateXFromScrollX(mScrollX);
     }
 
-    private void calculateSelectedX(float x) {
-        mSelectedIndex = indexOfTranslateX(-mTranslateX + x / mScaleX);
-        if (mSelectedIndex < mStartIndex) {
-            mSelectedIndex = mStartIndex;
-        }
-        if (mSelectedIndex > mStopIndex) {
-            mSelectedIndex = mStopIndex;
-        }
-    }
-
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawColor(Color.parseColor("#202326"));
+        canvas.drawColor(mBackgroundColor);
         if (mWidth == 0 || mMainHeight == 0 || mItemCount == 0) {
             return;
         }
@@ -310,11 +303,11 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
         float y = mMainHeight + mMainChildSpace + mChildHeight + dp2px(9);
         int i = 1;
         //当内容没有填充满
-        if (mDataLen < mWidth) {
-            i = (int) (mGridColumns - mDataLen / columnSpace) + 1;
+        if (mDataLen * mScaleX < mWidth) {
+            i = (int) (mGridColumns - mDataLen * mScaleX / columnSpace) + 1;
         }
         for (; i < mGridColumns; i++) {
-            int index = (mStopIndex - mStartIndex) * i / mGridColumns + mStartIndex;
+            int index = indexOfTranslateX(xToTranslateX(columnSpace * i));
             String text = formatDateTime(mAdapter.getDate(index));
             canvas.drawText(text, columnSpace * i - mTextPaint.measureText(text) / 2, y, mTextPaint);
         }
@@ -408,6 +401,16 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
         invalidate();
     }
 
+    private void calculateSelectedX(float x) {
+        mSelectedIndex = indexOfTranslateX(xToTranslateX(x));
+        if (mSelectedIndex < mStartIndex) {
+            mSelectedIndex = mStartIndex;
+        }
+        if (mSelectedIndex > mStopIndex) {
+            mSelectedIndex = mStopIndex;
+        }
+    }
+
     @Override
     public void onLongPress(MotionEvent e) {
         super.onLongPress(e);
@@ -437,10 +440,8 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
         mMainMinValue = Float.MAX_VALUE;
         mChildMaxValue = Float.MIN_VALUE;
         mChildMinValue = Float.MAX_VALUE;
-        //当前屏幕在缩放的情况下,最右方的偏移量
-        mStartIndex = indexOfTranslateX(-mTranslateX);
-        //当前屏幕在缩放的情况下,最左边的偏移量
-        mStopIndex = indexOfTranslateX(-mTranslateX + mWidth / mScaleX);
+        mStartIndex = indexOfTranslateX(xToTranslateX(0));
+        mStopIndex = indexOfTranslateX(xToTranslateX(mWidth));
         for (int i = mStartIndex; i <= mStopIndex; i++) {
             KLineImpl point = (KLineImpl) getItem(i);
             if (mMainDraw != null) {
@@ -680,5 +681,35 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
         if (mAnimator != null) {
             mAnimator.setDuration(duration);
         }
+    }
+
+    /**
+     * 设置表格行数
+     *
+     * @param gridRows
+     */
+    public void setGridRows(int gridRows) {
+        if (gridRows < 1) {
+            gridRows = 1;
+        }
+        mGridRows = gridRows;
+        invalidate();
+    }
+
+    /**
+     * 设置表格列数
+     *
+     * @param gridColumns
+     */
+    public void setGridColumns(int gridColumns) {
+        if (gridColumns < 1) {
+            gridColumns = 1;
+        }
+        mGridColumns = gridColumns;
+        invalidate();
+    }
+
+    private float xToTranslateX(float x) {
+        return -mTranslateX + x / mScaleX;
     }
 }
