@@ -1,3 +1,4 @@
 <resources>
     <dimen name="chart_text_size">10sp</dimen>
+    <dimen name="chart_selector_text_size">12sp</dimen>
 </resources>

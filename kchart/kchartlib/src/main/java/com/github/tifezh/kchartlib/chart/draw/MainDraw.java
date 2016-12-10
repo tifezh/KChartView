@@ -2,12 +2,19 @@ package com.github.tifezh.kchartlib.chart.draw;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.RectF;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.github.tifezh.kchartlib.R;
 import com.github.tifezh.kchartlib.chart.EntityImpl.CandleImpl;
 import com.github.tifezh.kchartlib.chart.EntityImpl.KLineImpl;
 import com.github.tifezh.kchartlib.chart.impl.IKChartView;
+import com.github.tifezh.kchartlib.utils.ViewUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 主图的实现类
@@ -16,6 +23,8 @@ import com.github.tifezh.kchartlib.chart.impl.IKChartView;
 
 public class MainDraw extends BaseDraw<CandleImpl> {
 
+    private Paint mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint mSelectorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     /**
      * 构造方法
      *
@@ -23,6 +32,10 @@ public class MainDraw extends BaseDraw<CandleImpl> {
      */
     public MainDraw(Context context) {
         super(context);
+        mTextPaint.setColor(context.getResources().getColor(R.color.chart_text));
+        mTextPaint.setTextSize(context.getResources().getDimension(R.dimen.chart_selector_text_size));
+        mSelectorPaint.setColor(context.getResources().getColor(R.color.chart_selector));
+        mSelectorPaint.setAlpha(200);
     }
 
     @Override
@@ -53,6 +66,9 @@ public class MainDraw extends BaseDraw<CandleImpl> {
         x += ma10Paint.measureText(text);
         text = "MA20:" + view.formatValue(point.getMA20Price()) + " ";
         canvas.drawText(text, x, y, ma20Paint);
+        if (view.isLongPress()) {
+            drawSelector(view, canvas);
+        }
     }
 
     @Override
@@ -62,14 +78,7 @@ public class MainDraw extends BaseDraw<CandleImpl> {
 
     @Override
     public float getMinValue(CandleImpl point) {
-
-        float min = Float.MAX_VALUE;
-        min = Math.min(min, point.getLowPrice());
-        //防止没有ma20的点计入
-        if (point.getMA20Price() != 0) {
-            min = Math.min(min, point.getMA20Price());
-        }
-        return min;
+        return Math.min(point.getMA20Price(), point.getLowPrice());
     }
 
     /**
@@ -100,5 +109,54 @@ public class MainDraw extends BaseDraw<CandleImpl> {
             canvas.drawRect(x - r, open, x + r, close + 1, redPaint);
             canvas.drawRect(x - lineR, high, x + lineR, low, redPaint);
         }
+    }
+
+    /**
+     * draw选择器
+     *
+     * @param view
+     * @param canvas
+     */
+    private void drawSelector(IKChartView view, Canvas canvas) {
+        Paint.FontMetrics metrics = mTextPaint.getFontMetrics();
+        float textHeight = metrics.descent - metrics.ascent;
+
+        int index = view.getSelectedIndex();
+        float padding = ViewUtil.Dp2Px(getContext(), 5);
+        float margin = ViewUtil.Dp2Px(getContext(), 5);
+        float width = 0;
+        float left;
+        float top = margin;
+        float height = padding * 8 + textHeight * 5;
+
+        CandleImpl point = (CandleImpl) view.getItem(index);
+        List<String> strings = new ArrayList<>();
+        strings.add(view.formatDateTime(view.getAdapter().getDate(index)));
+        strings.add("高:" + point.getHighPrice());
+        strings.add("低:" + point.getLowPrice());
+        strings.add("开:" + point.getOpenPrice());
+        strings.add("收:" + point.getClosePrice());
+
+        for (String s : strings) {
+            width = Math.max(width, mTextPaint.measureText(s));
+        }
+        width += padding * 2;
+
+        float x = view.translateXtoX(view.getX(index));
+        if (x > view.getChartWidth() / 2) {
+            left = margin;
+        } else {
+            left = view.getChartWidth() - width - margin;
+        }
+
+        RectF r = new RectF(left, top, left + width, top + height);
+        canvas.drawRoundRect(r, padding, padding, mSelectorPaint);
+        float y = top + padding * 2 + (textHeight - metrics.bottom - metrics.top) / 2;
+
+        for (String s : strings) {
+            canvas.drawText(s, left + padding, y, mTextPaint);
+            y += textHeight + padding;
+        }
+
     }
 }

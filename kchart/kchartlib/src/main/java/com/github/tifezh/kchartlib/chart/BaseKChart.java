@@ -32,7 +32,7 @@ import java.util.List;
  * Created by tian on 2016/5/3.
  */
 public abstract class BaseKChart extends ScrollAndScaleView implements
-        IKChartView {
+        IKChartView, IKChartView.OnSelectedChangedListener {
     protected int mChildDrawPosition = 0;
     //x轴的偏移量
     protected float mTranslateX = Float.MIN_VALUE;
@@ -118,6 +118,7 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
 
     private int mBackgroundColor = Color.parseColor("#202326");
 
+    private OnSelectedChangedListener mOnSelectedChangedListener = null;
     public BaseKChart(Context context) {
         super(context);
         init();
@@ -282,9 +283,12 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
      * @param canvas
      */
     private void drawText(Canvas canvas) {
+        Paint.FontMetrics fm = mTextPaint.getFontMetrics();
+        float textHeight = fm.descent - fm.ascent;
+        float baseLine = (textHeight - fm.bottom - fm.top) / 2;
         //--------------画上方k线图的值-------------
         if (mMainDraw != null) {
-            canvas.drawText(formatValue(mMainMaxValue), 0, dp2px(9), mTextPaint);
+            canvas.drawText(formatValue(mMainMaxValue), 0, baseLine, mTextPaint);
             canvas.drawText(formatValue(mMainMinValue), 0, mMainHeight, mTextPaint);
             float rowValue = (mMainMaxValue - mMainMinValue) / mGridRows;
             float rowSpace = mMainHeight / mGridRows;
@@ -295,12 +299,12 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
         }
         //--------------画下方子图的值-------------
         if (mChildDraw != null) {
-            canvas.drawText(formatValue(mChildMaxValue), 0, mMainHeight + mMainChildSpace + dp2px(9), mTextPaint);
+            canvas.drawText(formatValue(mChildMaxValue), 0, mMainHeight + mMainChildSpace + baseLine, mTextPaint);
             canvas.drawText(formatValue(mChildMinValue), 0, mMainHeight + mMainChildSpace + mChildHeight, mTextPaint);
         }
         //--------------画时间---------------------
         float columnSpace = mWidth / mGridColumns;
-        float y = mMainHeight + mMainChildSpace + mChildHeight + dp2px(9);
+        float y = mMainHeight + mMainChildSpace + mChildHeight + baseLine;
         int i = 1;
         //当内容没有填充满
         if (mDataLen * mScaleX < mWidth) {
@@ -318,28 +322,19 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
         }
         text = formatDateTime(getAdapter().getDate(mStopIndex));
         canvas.drawText(text, mWidth - mTextPaint.measureText(text), y, mTextPaint);
-        //画指示器的值
         if (isLongPress) {
-            //画时间
             KLineImpl point = (KLineImpl) getItem(mSelectedIndex);
-            float x = (getX(mSelectedIndex) + mTranslateX) * mScaleX;
-            y = dp2px(9);
-            text = formatDateTime(getAdapter().getDate(mSelectedIndex));
-            float r = mTextPaint.measureText(text) / 2f;
-            if (x - r < 0) {
-                x = r;
-            }
-            if (x + r > mWidth) {
-                x = mWidth - r;
-            }
-            canvas.drawRect(x - r, 0, x + r, dp2px(10), mBackgroundPaint);
-            canvas.drawText(text, x - r, y, mTextPaint);
-            //画值
             text = formatValue(point.getClosePrice());
-            r = dp2px(9) / 2;
+            float r = textHeight / 2;
             y = getMainY(point.getClosePrice());
-            x = mWidth - mTextPaint.measureText(text);
-            canvas.drawRect(x, y - r, mWidth, y + r, mBackgroundPaint);
+            float x;
+            if (translateXtoX(getX(mSelectedIndex)) < getChartWidth() / 2) {
+                x = 0;
+                canvas.drawRect(x, y - r, mTextPaint.measureText(text), y + r, mBackgroundPaint);
+            } else {
+                x = mWidth - mTextPaint.measureText(text);
+                canvas.drawRect(x, y - r, mWidth, y + r, mBackgroundPaint);
+            }
             canvas.drawText(text, x, fixTextY(y), mTextPaint);
         }
     }
@@ -358,7 +353,10 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
                 mMainDraw.drawText(canvas, this, position, x, y);
             }
             if (mChildDraw != null) {
-                float y = mMainHeight + mMainChildSpace + dp2px(9);
+                Paint.FontMetrics fm = mTextPaint.getFontMetrics();
+                float textHeight = fm.descent - fm.ascent;
+                float baseLine = (textHeight - fm.bottom - fm.top) / 2;
+                float y = mMainHeight + mMainChildSpace + baseLine;
                 float x = mTextPaint.measureText(formatValue(mChildMaxValue) + " ");
                 mChildDraw.drawText(canvas, this, position, x, y);
             }
@@ -414,7 +412,11 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
     @Override
     public void onLongPress(MotionEvent e) {
         super.onLongPress(e);
+        int lastIndex = mSelectedIndex;
         calculateSelectedX(e.getX());
+        if (lastIndex != mSelectedIndex) {
+            onSelectedChanged(this, getItem(mSelectedIndex), mSelectedIndex);
+        }
         invalidate();
     }
 
@@ -428,6 +430,9 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
      * 计算当前的显示区域
      */
     private void calculateValue() {
+        if (!isLongPress()) {
+            mSelectedIndex = -1;
+        }
         //当数据没有填充满
         if (mDataLen < mWidth / mScaleX) {
             mTranslateX = getMinTranslateX();
@@ -519,11 +524,7 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
         return mXs.get(position);
     }
 
-    /**
-     * 获取适配器
-     *
-     * @return
-     */
+    @Override
     public IAdapter getAdapter() {
         return mAdapter;
     }
@@ -603,7 +604,7 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
      *
      * @param date
      */
-    private String formatDateTime(Date date) {
+    public String formatDateTime(Date date) {
         if (getDateTimeFormatter() == null) {
             setDateTimeFormatter(new TimeFormatter());
         }
@@ -709,7 +710,45 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
         invalidate();
     }
 
-    private float xToTranslateX(float x) {
+    @Override
+    public float xToTranslateX(float x) {
         return -mTranslateX + x / mScaleX;
+    }
+
+    @Override
+    public float translateXtoX(float translateX) {
+        return (translateX + mTranslateX) * mScaleX;
+    }
+
+    @Override
+    public float getTopPadding() {
+        return mTopPadding;
+    }
+
+    @Override
+    public int getChartWidth() {
+        return mWidth;
+    }
+
+    @Override
+    public boolean isLongPress() {
+        return isLongPress;
+    }
+
+    @Override
+    public int getSelectedIndex() {
+        return mSelectedIndex;
+    }
+
+    @Override
+    public void setOnSelectedChangedListener(OnSelectedChangedListener l) {
+        this.mOnSelectedChangedListener = l;
+    }
+
+    @Override
+    public void onSelectedChanged(IKChartView view, Object point, int index) {
+        if (this.mOnSelectedChangedListener != null) {
+            mOnSelectedChangedListener.onSelectedChanged(view, point, index);
+        }
     }
 }

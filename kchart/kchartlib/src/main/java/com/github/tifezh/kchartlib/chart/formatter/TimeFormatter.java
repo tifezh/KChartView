@@ -13,6 +13,9 @@ import java.util.Date;
 public class TimeFormatter implements IDateTimeFormatter {
     @Override
     public String format(Date date) {
+        if (date == null) {
+            return "";
+        }
         return DateUtil.shortTimeFormat.format(date);
     }
 }

@@ -4,6 +4,7 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -14,6 +15,7 @@ import com.github.tifezh.kchart.chart.KChartAdapter;
 import com.github.tifezh.kchart.chart.KChartView;
 import com.github.tifezh.kchart.chart.KLineEntity;
 import com.github.tifezh.kchartlib.chart.formatter.DateFormatter;
+import com.github.tifezh.kchartlib.chart.impl.IKChartView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -81,7 +83,13 @@ public class ExampleActivity extends AppCompatActivity {
                 });
             }
         }).start();
-
+        mKChartView.setOnSelectedChangedListener(new IKChartView.OnSelectedChangedListener() {
+            @Override
+            public void onSelectedChanged(IKChartView view, Object point, int index) {
+                KLineEntity data = (KLineEntity) point;
+                Log.i("onSelectedChanged", "index:" + index + " closePrice:" + data.getClosePrice());
+            }
+        });
     }
 
     @Override

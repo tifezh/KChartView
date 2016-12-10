@@ -15,4 +15,5 @@
     <color name="chart_background">#202326</color>
     <color name="chart_grid_line">#353941</color>
     <color name="chart_text">#B1B2B6</color>
+    <color name="chart_selector">#30343C</color>
 </resources>
