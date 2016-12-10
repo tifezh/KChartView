@@ -118,6 +118,8 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
 
     private int mBackgroundColor = Color.parseColor("#202326");
 
+    private float mOverScrollRange = 0;
+
     private OnSelectedChangedListener mOnSelectedChangedListener = null;
     public BaseKChart(Context context) {
         super(context);
@@ -219,7 +221,6 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
 
     /**
      * 画表格
-     *
      * @param canvas
      */
     private void drawGird(Canvas canvas) {
@@ -243,7 +244,6 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
 
     /**
      * 画k线图
-     *
      * @param canvas
      */
     private void drawK(Canvas canvas) {
@@ -279,7 +279,6 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
 
     /**
      * 画文字
-     *
      * @param canvas
      */
     private void drawText(Canvas canvas) {
@@ -305,26 +304,31 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
         //--------------画时间---------------------
         float columnSpace = mWidth / mGridColumns;
         float y = mMainHeight + mMainChildSpace + mChildHeight + baseLine;
-        int i = 1;
-        //当内容没有填充满
-        if (mDataLen * mScaleX < mWidth) {
-            i = (int) (mGridColumns - mDataLen * mScaleX / columnSpace) + 1;
-        }
-        for (; i < mGridColumns; i++) {
-            int index = indexOfTranslateX(xToTranslateX(columnSpace * i));
-            String text = formatDateTime(mAdapter.getDate(index));
-            canvas.drawText(text, columnSpace * i - mTextPaint.measureText(text) / 2, y, mTextPaint);
+
+        float startX = getX(mStartIndex) - mPointWidth / 2;
+        float stopX = getX(mStopIndex) + mPointWidth / 2;
+
+        for (int i = 1; i < mGridColumns; i++) {
+            float translateX = xToTranslateX(columnSpace * i);
+            if (translateX >= startX && translateX <= stopX) {
+                int index = indexOfTranslateX(translateX);
+                String text = formatDateTime(mAdapter.getDate(index));
+                canvas.drawText(text, columnSpace * i - mTextPaint.measureText(text) / 2, y, mTextPaint);
+            }
         }
 
-        String text = "";
-        if (mDataLen > mWidth / mScaleX) {
+        float translateX = xToTranslateX(0);
+        if (translateX >= startX && translateX <= stopX) {
             canvas.drawText(formatDateTime(getAdapter().getDate(mStartIndex)), 0, y, mTextPaint);
         }
-        text = formatDateTime(getAdapter().getDate(mStopIndex));
-        canvas.drawText(text, mWidth - mTextPaint.measureText(text), y, mTextPaint);
+        translateX = xToTranslateX(mWidth);
+        if (translateX >= startX && translateX <= stopX) {
+            String text = formatDateTime(getAdapter().getDate(mStopIndex));
+            canvas.drawText(text, mWidth - mTextPaint.measureText(text), y, mTextPaint);
+        }
         if (isLongPress) {
             KLineImpl point = (KLineImpl) getItem(mSelectedIndex);
-            text = formatValue(point.getClosePrice());
+            String text = formatValue(point.getClosePrice());
             float r = textHeight / 2;
             y = getMainY(point.getClosePrice());
             float x;
@@ -341,7 +345,6 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
 
     /**
      * 画值
-     *
      * @param canvas
      * @param position 显示某个点的值
      */
@@ -392,6 +395,7 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
                 float x = i * mPointWidth;
                 mXs.add(x);
             }
+            checkAndFixScrollX();
             setTranslateXFromScrollX(mScrollX);
         } else {
             setScrollX(0);
@@ -433,14 +437,6 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
         if (!isLongPress()) {
             mSelectedIndex = -1;
         }
-        //当数据没有填充满
-        if (mDataLen < mWidth / mScaleX) {
-            mTranslateX = getMinTranslateX();
-        } else if (mTranslateX < getMinTranslateX()) {
-            mTranslateX = getMinTranslateX();
-        } else if (mTranslateX > getMaxTranslateX()) {
-            mTranslateX = getMaxTranslateX();
-        }
         mMainMaxValue = Float.MIN_VALUE;
         mMainMinValue = Float.MAX_VALUE;
         mChildMaxValue = Float.MIN_VALUE;
@@ -471,7 +467,6 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
 
     /**
      * 获取平移的最小值
-     *
      * @return
      */
     private float getMinTranslateX() {
@@ -480,16 +475,18 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
 
     /**
      * 获取平移的最大值
-     *
      * @return
      */
     private float getMaxTranslateX() {
+        if (!isFullScreen()) {
+            return getMinTranslateX();
+        }
         return mPointWidth / 2;
     }
 
     @Override
     public int getMinScrollX() {
-        return 0;
+        return (int) -(mOverScrollRange / mScaleX);
     }
 
     public int getMaxScrollX() {
@@ -539,7 +536,6 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
 
     /**
      * 设置子图的绘制方法
-     *
      * @param position
      */
     private void setChildDraw(int position) {
@@ -556,7 +552,6 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
 
     /**
      * scrollX 转换为 TranslateX
-     *
      * @param scrollX
      */
     private void setTranslateXFromScrollX(int scrollX) {
@@ -565,7 +560,6 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
 
     /**
      * 获取ValueFormatter
-     *
      * @return
      */
     public IValueFormatter getValueFormatter() {
@@ -583,7 +577,6 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
 
     /**
      * 获取DatetimeFormatter
-     *
      * @return 时间格式化器
      */
     public IDateTimeFormatter getDateTimeFormatter() {
@@ -592,7 +585,6 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
 
     /**
      * 设置dateTimeFormatter
-     *
      * @param dateTimeFormatter 时间格式化器
      */
     public void setDateTimeFormatter(IDateTimeFormatter dateTimeFormatter) {
@@ -613,7 +605,6 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
 
     /**
      * 获取主区域的 IChartDraw
-     *
      * @return IChartDraw
      */
     public IChartDraw getMainDraw() {
@@ -622,7 +613,6 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
 
     /**
      * 设置主区域的 IChartDraw
-     *
      * @param mainDraw IChartDraw
      */
     public void setMainDraw(IChartDraw mainDraw) {
@@ -631,7 +621,6 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
 
     /**
      * 二分查找当前值的index
-     *
      * @param translateX
      * @return
      */
@@ -750,5 +739,22 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
         if (this.mOnSelectedChangedListener != null) {
             mOnSelectedChangedListener.onSelectedChanged(view, point, index);
         }
+    }
+
+    /**
+     * 数据是否充满屏幕
+     *
+     * @return
+     */
+    public boolean isFullScreen() {
+        return mDataLen >= mWidth / mScaleX;
+    }
+
+    @Override
+    public void setOverScrollRange(float overScrollRange) {
+        if (overScrollRange < 0) {
+            overScrollRange = 0;
+        }
+        mOverScrollRange = overScrollRange;
     }
 }

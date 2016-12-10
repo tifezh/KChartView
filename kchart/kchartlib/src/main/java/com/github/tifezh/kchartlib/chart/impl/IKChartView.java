@@ -14,7 +14,6 @@ import java.util.Date;
 public interface IKChartView {
     /**
      * 设置数据适配器
-     *
      * @param adapter IAdapter
      */
     void setAdapter(IAdapter adapter);
@@ -27,7 +26,6 @@ public interface IKChartView {
 
     /**
      * 给子区域添加画图方法
-     *
      * @param name 显示的文字标签
      * @param draw IChartDraw
      */
@@ -35,14 +33,12 @@ public interface IKChartView {
 
     /**
      * 将实际值转换为主图的坐标值
-     *
      * @param value
      */
     float getMainY(float value);
 
     /**
      * 将实际值转换为子图的坐标值
-     *
      * @param value
      * @return
      */
@@ -50,7 +46,6 @@ public interface IKChartView {
 
     /**
      * 在主区域画线
-     *
      * @param startX    开始点的横坐标
      * @param stopX     开始点的值
      * @param stopX     结束点的横坐标
@@ -60,7 +55,6 @@ public interface IKChartView {
 
     /**
      * 在子区域画线
-     *
      * @param startX     开始点的横坐标
      * @param startValue 开始点的值
      * @param stopX      结束点的横坐标
@@ -70,7 +64,6 @@ public interface IKChartView {
 
     /**
      * 通过序号获取item
-     *
      * @param position
      * @return
      */
@@ -85,7 +78,6 @@ public interface IKChartView {
 
     /**
      * 格式化value
-     *
      * @param value
      */
     String formatValue(float value);
@@ -109,42 +101,36 @@ public interface IKChartView {
 
     /**
      * 获取view宽度
-     *
      * @return
      */
     int getChartWidth();
 
     /**
      * 获取上方padding
-     *
      * @return
      */
     float getTopPadding();
 
     /**
      * 是否是长按状态
-     *
      * @return
      */
     boolean isLongPress();
 
     /**
      * 获取长按状态下选中的索引
-     *
      * @return 返回选择点的索引 非长按状态下返回-1
      */
     int getSelectedIndex();
 
     /**
      * 设置选中变化监听
-     *
      * @param l
      */
     void setOnSelectedChangedListener(OnSelectedChangedListener l);
 
     /**
      * view中的x转化为TranslateX
-     *
      * @param x
      * @return
      */
@@ -152,11 +138,17 @@ public interface IKChartView {
 
     /**
      * translateX转化为view中的x
-     *
      * @param translateX
      * @return
      */
     float translateXtoX(float translateX);
+
+    /**
+     * 设置超出右方后可滑动的范围
+     *
+     * @param overScrollRange
+     */
+    void setOverScrollRange(float overScrollRange);
 
     /**
      * 选中点变化时的监听

@@ -115,15 +115,7 @@ public abstract class ScrollAndScaleView extends RelativeLayout implements
     public void scrollTo(int x, int y) {
         int oldX = mScrollX;
         mScrollX = x;
-        if (mScrollX < getMinScrollX()) {
-            mScrollX = getMinScrollX();
-            onRightSide();
-            mScroller.forceFinished(true);
-        } else if (mScrollX > getMaxScrollX()) {
-            mScrollX = getMaxScrollX();
-            onLeftSide();
-            mScroller.forceFinished(true);
-        }
+        checkAndFixScrollX();
         onScrollChanged(mScrollX, 0, oldX, 0);
         invalidate();
     }
@@ -225,13 +217,18 @@ public abstract class ScrollAndScaleView extends RelativeLayout implements
      */
     public void setScrollX(int scrollX) {
         this.mScrollX = scrollX;
+        scrollTo(scrollX, 0);
+    }
+
+    protected void checkAndFixScrollX() {
         if (mScrollX < getMinScrollX()) {
             mScrollX = getMinScrollX();
             onRightSide();
+            mScroller.forceFinished(true);
         } else if (mScrollX > getMaxScrollX()) {
             mScrollX = getMaxScrollX();
             onLeftSide();
+            mScroller.forceFinished(true);
         }
-        scrollTo(scrollX, 0);
     }
 }

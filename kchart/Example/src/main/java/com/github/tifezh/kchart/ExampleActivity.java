@@ -16,6 +16,7 @@ import com.github.tifezh.kchart.chart.KChartView;
 import com.github.tifezh.kchart.chart.KLineEntity;
 import com.github.tifezh.kchartlib.chart.formatter.DateFormatter;
 import com.github.tifezh.kchartlib.chart.impl.IKChartView;
+import com.github.tifezh.kchartlib.utils.ViewUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -48,15 +49,27 @@ public class ExampleActivity extends AppCompatActivity {
                     WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
                     WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }
+        initView();
         initData();
     }
 
-    private void initData() {
+    private void initView() {
         mAdapter = new KChartAdapter();
         mKChartView.setAdapter(mAdapter);
         mKChartView.setDateTimeFormatter(new DateFormatter());
         mKChartView.setGridRows(4);
         mKChartView.setGridColumns(4);
+        mKChartView.setOnSelectedChangedListener(new IKChartView.OnSelectedChangedListener() {
+            @Override
+            public void onSelectedChanged(IKChartView view, Object point, int index) {
+                KLineEntity data = (KLineEntity) point;
+                Log.i("onSelectedChanged", "index:" + index + " closePrice:" + data.getClosePrice());
+            }
+        });
+        mKChartView.setOverScrollRange(ViewUtil.Dp2Px(this, 100));
+    }
+
+    private void initData() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -73,6 +86,9 @@ public class ExampleActivity extends AppCompatActivity {
                 }
                 final List<KLineEntity> data = new Gson().fromJson(res, new TypeToken<List<KLineEntity>>() {
                 }.getType());
+                while (data.size() > 20) {
+                    data.remove(0);
+                }
                 DataHelper.calculate(data);
                 runOnUiThread(new Runnable() {
                     @Override
@@ -83,13 +99,6 @@ public class ExampleActivity extends AppCompatActivity {
                 });
             }
         }).start();
-        mKChartView.setOnSelectedChangedListener(new IKChartView.OnSelectedChangedListener() {
-            @Override
-            public void onSelectedChanged(IKChartView view, Object point, int index) {
-                KLineEntity data = (KLineEntity) point;
-                Log.i("onSelectedChanged", "index:" + index + " closePrice:" + data.getClosePrice());
-            }
-        });
     }
 
     @Override
