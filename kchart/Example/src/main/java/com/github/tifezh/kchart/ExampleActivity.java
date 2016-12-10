@@ -86,9 +86,6 @@ public class ExampleActivity extends AppCompatActivity {
                 }
                 final List<KLineEntity> data = new Gson().fromJson(res, new TypeToken<List<KLineEntity>>() {
                 }.getType());
-                while (data.size() > 20) {
-                    data.remove(0);
-                }
                 DataHelper.calculate(data);
                 runOnUiThread(new Runnable() {
                     @Override
