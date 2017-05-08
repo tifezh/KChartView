@@ -9,4 +9,4 @@ KChart for Android ；股票k线图
 
 ![image](https://github.com/silladus/KChartView/blob/master/kchart/img/min.png)
 
-![image](https://github.com/silladus/KChartView/blob/master/kchart/img/kline.png)
+![image](https://github.com/silladus/KChartView/blob/master/kchart/img/Kline.png)
