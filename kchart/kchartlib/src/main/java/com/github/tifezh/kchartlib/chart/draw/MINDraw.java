@@ -12,7 +12,7 @@ import com.github.tifezh.kchartlib.chart.impl.IKChartView;
 
 /**
  * 分时图的实现类
- * Created by lianming on 2017/3/7.
+ * Created by silladus on 2017/3/7.
  */
 
 public class MINDraw extends BaseDraw<MINImpl> {

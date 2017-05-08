@@ -11,17 +11,19 @@ import android.view.ViewGroup;
 import com.github.tifezh.kchartlib.chart.OrderView;
 import com.github.tifezh.kchartlib.chart.formatter.TimeFormatter;
 import com.github.tifezh.kchartlib.chart.impl.IKChartView;
-import com.silladus.stock.kchart.bean.ConstantTest;
-import com.silladus.stock.kchart.bean.DataParse;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.silladus.stock.kchart.bean.MinLineEntity;
 import com.silladus.stock.kchart.chart.KLineEntity;
 import com.silladus.stock.kchart.chart.MChartAdapter;
 import com.silladus.stock.kchart.chart.MTrendView;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.apache.http.util.EncodingUtils;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -72,55 +74,88 @@ public class FragmentMT extends Fragment {
         });
     }
 
-    private DataParse mData;
-
     private void initData() {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                mData = new DataParse();
-                JSONObject object = null;
+                String fileName = "min.json"; //分时图数据
+                String res = "";
                 try {
-                    object = new JSONObject(ConstantTest.MINUTESURL);
-                } catch (JSONException e) {
+                    InputStream in = getResources().getAssets().open(fileName);
+                    int length = in.available();
+                    byte[] buffer = new byte[length];
+                    in.read(buffer);
+                    res = EncodingUtils.getString(buffer, "UTF-8");
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-                mData.parseMinutes(object);
-                final List<KLineEntity> data = new ArrayList<KLineEntity>();
-                for (int i = 0; i < mData.getDatas().size(); i++) {
-                    KLineEntity min = new KLineEntity();
-                    min.isMinDraw = true;
-                    min.Close = mData.getDatas().get(i).cjprice;
-                    min.avPrice = mData.getDatas().get(i).avprice;
-                    min.lastPrice = i > 0 ? mData.getDatas().get(i - 1).cjprice : mData.baseValue;
-                    min.lastClosePrice = mData.baseValue;
-                    min.Volume = mData.getDatas().get(i).cjnum;
-                    min.Date = mData.getDatas().get(i).time;
-                    min.High = mData.baseValue + Math.abs(mData.getDatas().get(i).cha);
-                    min.Low = mData.baseValue - Math.abs(mData.getDatas().get(i).cha);
-                    data.add(min);
-                }
+                final List<MinLineEntity> data = new Gson().fromJson(res, new TypeToken<List<MinLineEntity>>() {
+                }.getType());
+                setTrendMin(data);
 
-                orderView.setClose(mData.baseValue);
-                List<String[]> buys = new ArrayList<String[]>();
-                List<String[]> sells = new ArrayList<String[]>();
-                String[] ss = {"3.55", "1000"};
+                final List<String[]> buys = new ArrayList<String[]>();
+                final List<String[]> sells = new ArrayList<String[]>();
                 for (int i = 0; i < 5; i++) {
-                    buys.add(ss);
-                    sells.add(ss);
+                    buys.add(new String[]{"10.55", "1000"});
                 }
-                orderView.setOrder(buys, sells);
-
-                DataHelper.calculate(data);
+                int cachePrice = 352;
+                Random random = new Random();
+                for (int i = 0; i < 10; i++) {
+                    String[] ss = {"10.55", "1000"};
+                    ss[0] = String.format("%.2f", cachePrice / 100f);
+                    int oV = 1 | random.nextInt(100000);
+                    if (oV >= 10000) {
+                        float value1 = oV / 10000f;
+                        ss[1] = String.format("%.2f", value1) + "万";
+                    } else {
+                        ss[1] = String.valueOf(oV);
+                    }
+                    if (i < 5) {
+                        if (i == 4) {
+                            ss[1] = "1.53万";
+                        }
+                        if (i == 3) {
+                            ss[1] = "61.37万";
+                        }
+                        buys.set(4 - i, ss);
+                    } else {
+                        if (i == 5) {
+                            ss[1] = "60";
+                        }
+                        sells.add(ss);
+                    }
+                    cachePrice++;
+                }
+                DataHelper.calculate(datas);
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-//                        mAdapter.addHeaderData(data);
-                        mAdapter.addFooterData(data);
+                        orderView.setClose(3.54f);
+                        orderView.setOrder(buys, sells);
+//                        mAdapter.addHeaderData(datas);
+                        mAdapter.addFooterData(datas);
                         minView.startAnimation();
                     }
                 });
             }
         }).start();
+    }
+
+    private List<KLineEntity> datas = new ArrayList<>();
+
+    private void setTrendMin(List<MinLineEntity> data) {
+        for (int i = 0; i < data.size(); i++) {
+            KLineEntity min = new KLineEntity();
+            min.isMinDraw = true;
+            min.Close = (float) data.get(i).price;
+            min.avPrice = (float) data.get(i).avg;
+            min.lastPrice = (float) (i > 0 ? data.get(i - 1).price : 3.54f);
+            min.lastClosePrice = 3.54f;
+            min.Volume = data.get(i).vol * 100;
+            min.Date = data.get(i).time;
+            min.High = 3.57f;
+            min.Low = 3.52f;
+            datas.add(min);
+        }
     }
 }

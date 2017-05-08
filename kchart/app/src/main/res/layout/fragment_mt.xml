@@ -14,14 +14,14 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2"
-            android:layout_marginLeft="5dp" />
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp" />
 
         <com.github.tifezh.kchartlib.chart.OrderView
             android:id="@+id/mt_order_view"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"/>
 
     </LinearLayout>
