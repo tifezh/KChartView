@@ -7,6 +7,4 @@ KChart for Android ；股票k线图
         <img src='https://github.com/tifezh/KChartView/tree/master/kchart/img/demo.gif' width="300px"/>
 </div>
 
-![image](https://github.com/silladus/KChartView/blob/master/kchart/img/min.png?raw=true)
-
-![image](https://github.com/silladus/KChartView/blob/master/kchart/img/kline.png?raw=true)
+![image](https://github.com/silladus/KChartView/blob/master/kchart/img/min.png)
