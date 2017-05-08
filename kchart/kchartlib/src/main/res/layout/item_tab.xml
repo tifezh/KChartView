@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:layout_width="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout android:layout_width="50dp"
-        android:layout_height="30dp"
-        xmlns:android="http://schemas.android.com/apk/res/android">
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="50dp"
+        android:layout_height="20dp">
 
         <TextView
             android:id="@+id/tab_text"
@@ -15,9 +15,11 @@
             android:textColor="@drawable/tab_text_color_selector" />
 
         <View
+            android:id="@+id/tab_indicator"
             android:layout_width="match_parent"
             android:layout_height="2dp"
+            android:layout_alignParentBottom="true"
             android:background="@drawable/tab_indicator_selector"
-            android:layout_alignParentBottom="true" />
+            android:visibility="gone" />
     </RelativeLayout>
 </LinearLayout>

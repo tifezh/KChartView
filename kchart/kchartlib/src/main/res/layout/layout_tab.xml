@@ -3,7 +3,7 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#30343C"
+    android:background="@android:color/white"
     android:gravity="center_vertical">
 
     <LinearLayout
@@ -17,7 +17,7 @@
 
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="30dp"
+        android:layout_height="20dp"
         android:orientation="horizontal">
 
         <TextView
@@ -25,7 +25,7 @@
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:text="切屏"
-            android:textColor="@color/chart_white"
+            android:textColor="@android:color/darker_gray"
             android:layout_alignParentRight="true"
             android:paddingRight="15dp"
             android:gravity="center" />

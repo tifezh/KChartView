@@ -30,9 +30,9 @@ public abstract class BaseDraw<T> implements IChartDraw<T> {
     protected Context mContext;
 
     public BaseDraw(Context context) {
-        mCandleWidth = ViewUtil.Dp2Px(context, 4);
-        mCandleLineWidth = ViewUtil.Dp2Px(context, 1);
-        mLineWidth = ViewUtil.Dp2Px(context, 0.5f);
+        mCandleWidth = ViewUtil.dp2Px(context, 4);
+        mCandleLineWidth = ViewUtil.dp2Px(context, 1);
+        mLineWidth = ViewUtil.dp2Px(context, 0.5f);
         mTextSize = context.getResources().getDimension(R.dimen.chart_text_size);
         redPaint.setColor(context.getResources().getColor(R.color.chart_red));
         greenPaint.setColor(context.getResources().getColor(R.color.chart_green));
@@ -41,7 +41,7 @@ public abstract class BaseDraw<T> implements IChartDraw<T> {
         ma5Paint.setStrokeWidth(mLineWidth);
         ma5Paint.setTextSize(mTextSize);
 
-        ma10Paint.setColor(context.getResources().getColor(R.color.chart_ma10));
+        ma10Paint.setColor(context.getResources().getColor(R.color.price_av));
         ma10Paint.setStrokeWidth(mLineWidth);
         ma10Paint.setTextSize(mTextSize);
 

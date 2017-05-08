@@ -22,7 +22,6 @@ public abstract class BaseKChartAdapter implements IAdapter {
         }
     }
 
-
     @Override
     public void registerDataSetObserver(DataSetObserver observer) {
         mDataSetObservable.registerObserver(observer);

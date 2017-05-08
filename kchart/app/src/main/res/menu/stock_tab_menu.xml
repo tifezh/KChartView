@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/item_60min"
+        android:title="60"
+        android:visible="true"/>
+    <item
+        android:id="@+id/item_30min"
+        android:title="30"
+        android:visible="true"/>
+    <item
+        android:id="@+id/item_15min"
+        android:title="15"
+        android:visible="true"/>
+    <item
+        android:id="@+id/item_5min"
+        android:title="5"
+        android:visible="true"/>
+</menu>
