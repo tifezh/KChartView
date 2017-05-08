@@ -5,6 +5,6 @@ KChart for Android ；股票k线图
 -------  
 <div class='row'>
         <img src='https://github.com/tifezh/KChartView/tree/master/kchart/img/demo.gif'
-        <img src='https://github.com/silladus/KChartView/blob/master/kchart/img/min.png' 
+        <img src='KChartView/kchart/img/min.png' 
         <img src='https://github.com/silladus/KChartView/blob/master/kchart/img/kline.png' width="300px"/>
 </div>
