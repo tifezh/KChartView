@@ -9,6 +9,12 @@ KChart for Android ；股票k线图
 
 ![image](https://github.com/silladus/KChartView/blob/master/kchart/img/demo.gif)
 
+  分时
+---------
+
 ![image](https://github.com/silladus/KChartView/blob/master/kchart/img/min.png)
+
+  K线
+---------
 
 ![image](https://github.com/silladus/KChartView/blob/master/kchart/img/Kline.png)
