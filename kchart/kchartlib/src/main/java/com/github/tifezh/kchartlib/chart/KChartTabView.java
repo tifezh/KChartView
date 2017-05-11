@@ -22,7 +22,6 @@ import com.github.tifezh.kchartlib.utils.ViewUtil;
  * Created by tifezh on 2016/5/17.
  */
 public class KChartTabView extends RelativeLayout implements View.OnClickListener {
-
     LinearLayout mLlContainer;
     TextView mTvFullScreen;
     private TabSelectListener mTabSelectListener = null;
@@ -46,11 +45,12 @@ public class KChartTabView extends RelativeLayout implements View.OnClickListene
 
     private void init() {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.layout_tab, null, false);
-        LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewUtil.Dp2Px(getContext(), 30));
+        LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewUtil.dp2Px(getContext(), 20));
         view.setLayoutParams(layoutParams);
         addView(view);
         mLlContainer = (LinearLayout) findViewById(R.id.ll_container);
         mTvFullScreen = (TextView) findViewById(R.id.tv_fullScreen);
+        mTvFullScreen.setTextSize(12);
         mTvFullScreen.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,7 +58,6 @@ public class KChartTabView extends RelativeLayout implements View.OnClickListene
                 boolean isVertical = (getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT);
                 if (isVertical) {
                     activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-
                 } else {
                     activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
                 }
@@ -97,10 +96,14 @@ public class KChartTabView extends RelativeLayout implements View.OnClickListene
      *
      * @param text 选项卡文字
      */
-    public void addTab(String text) {
+    public void addTab(String text, boolean isShowTabIndicator) {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.item_tab, null);
         TextView textView = (TextView) view.findViewById(R.id.tab_text);
         textView.setText(text);
+        textView.setTextSize(12);
+        if (isShowTabIndicator) {
+            view.findViewById(R.id.tab_indicator).setVisibility(View.VISIBLE);
+        }
         view.setOnClickListener(this);
         mLlContainer.addView(view);
         //第一个默认选中
@@ -129,5 +132,4 @@ public class KChartTabView extends RelativeLayout implements View.OnClickListene
             mTabSelectListener.onTabSelected(position);
         }
     }
-
 }

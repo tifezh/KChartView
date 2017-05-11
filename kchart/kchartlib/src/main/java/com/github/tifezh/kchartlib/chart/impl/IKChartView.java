@@ -47,7 +47,7 @@ public interface IKChartView {
     /**
      * 在主区域画线
      * @param startX    开始点的横坐标
-     * @param stopX     开始点的值
+     * @param startValue     开始点的值
      * @param stopX     结束点的横坐标
      * @param stopValue 结束点的值
      */

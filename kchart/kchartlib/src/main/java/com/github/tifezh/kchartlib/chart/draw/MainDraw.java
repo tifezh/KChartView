@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import com.github.tifezh.kchartlib.R;
 import com.github.tifezh.kchartlib.chart.EntityImpl.CandleImpl;
 import com.github.tifezh.kchartlib.chart.EntityImpl.KLineImpl;
+import com.github.tifezh.kchartlib.chart.formatter.ValueFormatter;
 import com.github.tifezh.kchartlib.chart.impl.IKChartView;
 import com.github.tifezh.kchartlib.utils.ViewUtil;
 
@@ -22,9 +23,10 @@ import java.util.List;
  */
 
 public class MainDraw extends BaseDraw<CandleImpl> {
-
     private Paint mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mSelectorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private ValueFormatter df = new ValueFormatter();
+
     /**
      * 构造方法
      *
@@ -41,17 +43,17 @@ public class MainDraw extends BaseDraw<CandleImpl> {
     @Override
     public void drawTranslated(@Nullable CandleImpl lastPoint, @NonNull CandleImpl curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull IKChartView view, int position) {
         drawCandle(view, canvas, curX, curPoint.getHighPrice(), curPoint.getLowPrice(), curPoint.getOpenPrice(), curPoint.getClosePrice());
-        //画ma5
-        if (lastPoint.getMA5Price() != 0) {
-            view.drawMainLine(canvas, ma5Paint, lastX, lastPoint.getMA5Price(), curX, curPoint.getMA5Price());
+        //画ma20
+        if (lastPoint.getMA20Price() != 0 && position > 19) {
+            view.drawMainLine(canvas, ma20Paint, lastX, lastPoint.getMA20Price(), curX, curPoint.getMA20Price());
         }
         //画ma10
-        if (lastPoint.getMA10Price() != 0) {
+        if (lastPoint.getMA10Price() != 0 && position > 9) {
             view.drawMainLine(canvas, ma10Paint, lastX, lastPoint.getMA10Price(), curX, curPoint.getMA10Price());
         }
-        //画ma20
-        if (lastPoint.getMA20Price() != 0) {
-            view.drawMainLine(canvas, ma20Paint, lastX, lastPoint.getMA20Price(), curX, curPoint.getMA20Price());
+        //画ma5
+        if (lastPoint.getMA5Price() != 0 && position > 4) {
+            view.drawMainLine(canvas, ma5Paint, lastX, lastPoint.getMA5Price(), curX, curPoint.getMA5Price());
         }
     }
 
@@ -81,6 +83,8 @@ public class MainDraw extends BaseDraw<CandleImpl> {
         return Math.min(point.getMA20Price(), point.getLowPrice());
     }
 
+    private float lastClose;
+
     /**
      * 画Candle
      *
@@ -106,9 +110,15 @@ public class MainDraw extends BaseDraw<CandleImpl> {
             canvas.drawRect(x - r, open, x + r, close, greenPaint);
             canvas.drawRect(x - lineR, high, x + lineR, low, greenPaint);
         } else {
-            canvas.drawRect(x - r, open, x + r, close + 1, redPaint);
-            canvas.drawRect(x - lineR, high, x + lineR, low, redPaint);
+            if (close <= lastClose) {
+                canvas.drawRect(x - r, open, x + r, close + 1, redPaint);
+                canvas.drawRect(x - lineR, high, x + lineR, low, redPaint);
+            } else {
+                canvas.drawRect(x - r, open, x + r, close + 1, greenPaint);
+                canvas.drawRect(x - lineR, high, x + lineR, low, greenPaint);
+            }
         }
+        lastClose = close;
     }
 
     /**
@@ -122,8 +132,8 @@ public class MainDraw extends BaseDraw<CandleImpl> {
         float textHeight = metrics.descent - metrics.ascent;
 
         int index = view.getSelectedIndex();
-        float padding = ViewUtil.Dp2Px(getContext(), 5);
-        float margin = ViewUtil.Dp2Px(getContext(), 5);
+        float padding = ViewUtil.dp2Px(getContext(), 5);
+        float margin = ViewUtil.dp2Px(getContext(), 5);
         float width = 0;
         float left;
         float top = margin;
@@ -132,10 +142,10 @@ public class MainDraw extends BaseDraw<CandleImpl> {
         CandleImpl point = (CandleImpl) view.getItem(index);
         List<String> strings = new ArrayList<>();
         strings.add(view.formatDateTime(view.getAdapter().getDate(index)));
-        strings.add("高:" + point.getHighPrice());
-        strings.add("低:" + point.getLowPrice());
-        strings.add("开:" + point.getOpenPrice());
-        strings.add("收:" + point.getClosePrice());
+        strings.add("高:" + df.format(point.getHighPrice()));
+        strings.add("低:" + df.format(point.getLowPrice()));
+        strings.add("开:" + df.format(point.getOpenPrice()));
+        strings.add("收:" + df.format(point.getClosePrice()));
 
         for (String s : strings) {
             width = Math.max(width, mTextPaint.measureText(s));

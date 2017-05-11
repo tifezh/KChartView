@@ -1,1 +1,1 @@
-include ':Example', ':kchartlib'
+include ':app', ':kchartlib'
