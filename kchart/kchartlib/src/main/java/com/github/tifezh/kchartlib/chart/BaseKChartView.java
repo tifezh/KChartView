@@ -31,7 +31,7 @@ import java.util.List;
  * k线图
  * Created by tian on 2016/5/3.
  */
-public abstract class BaseKChart extends ScrollAndScaleView implements
+public abstract class BaseKChartView extends ScrollAndScaleView implements
         IKChartView, IKChartView.OnSelectedChangedListener {
     protected int mChildDrawPosition = 0;
     //x轴的偏移量
@@ -121,17 +121,17 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
     private float mOverScrollRange = 0;
 
     private OnSelectedChangedListener mOnSelectedChangedListener = null;
-    public BaseKChart(Context context) {
+    public BaseKChartView(Context context) {
         super(context);
         init();
     }
 
-    public BaseKChart(Context context, AttributeSet attrs) {
+    public BaseKChartView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public BaseKChart(Context context, AttributeSet attrs, int defStyleAttr) {
+    public BaseKChartView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
@@ -428,6 +428,12 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
     protected void onScrollChanged(int l, int t, int oldl, int oldt) {
         super.onScrollChanged(l, t, oldl, oldt);
         setTranslateXFromScrollX(mScrollX);
+    }
+
+    @Override
+    protected void onScaleChanged(float scale, float oldScale) {
+        setTranslateXFromScrollX(mScrollX);
+        super.onScaleChanged(scale, oldScale);
     }
 
     /**
