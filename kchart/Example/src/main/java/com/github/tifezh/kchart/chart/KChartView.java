@@ -3,7 +3,7 @@ package com.github.tifezh.kchart.chart;
 import android.content.Context;
 import android.util.AttributeSet;
 
-import com.github.tifezh.kchartlib.chart.BaseKChart;
+import com.github.tifezh.kchartlib.chart.BaseKChartView;
 import com.github.tifezh.kchartlib.chart.draw.BOLLDraw;
 import com.github.tifezh.kchartlib.chart.draw.KDJDraw;
 import com.github.tifezh.kchartlib.chart.draw.MACDDraw;
@@ -14,7 +14,7 @@ import com.github.tifezh.kchartlib.chart.draw.RSIDraw;
  * k线图
  * Created by tian on 2016/5/20.
  */
-public class KChartView extends BaseKChart {
+public class KChartView extends BaseKChartView {
 
     public KChartView(Context context) {
         this(context, null);
