@@ -432,6 +432,7 @@ public abstract class BaseKChartView extends ScrollAndScaleView implements
 
     @Override
     protected void onScaleChanged(float scale, float oldScale) {
+        checkAndFixScrollX();
         setTranslateXFromScrollX(mScrollX);
         super.onScaleChanged(scale, oldScale);
     }
