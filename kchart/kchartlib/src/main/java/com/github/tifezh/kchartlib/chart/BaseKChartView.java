@@ -6,6 +6,8 @@ import android.database.DataSetObserver;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -33,60 +35,54 @@ import java.util.List;
  */
 public abstract class BaseKChartView extends ScrollAndScaleView implements
         IKChartView, IKChartView.OnSelectedChangedListener {
-    protected int mChildDrawPosition = 0;
-    //x轴的偏移量
-    protected float mTranslateX = Float.MIN_VALUE;
-    //k线图形区域的高度
-    protected int mMainHeight = 0;
-    //图形区域的宽度
-    protected int mWidth = 0;
-    //下方子图的高度
-    protected int mChildHeight = 0;
-    //图像上padding
-    protected int mTopPadding = 15;
-    //图像下padding
-    protected int mBottomPadding = 15;
-    //k线图和子图像之间的空隙
-    protected int mMainChildSpace = 30;
-    //k线图y轴的缩放
-    protected float mMainScaleY = 1;
-    //子图轴的缩放
-    protected float mChildScaleY = 1;
-    //数据的真实长度
-    protected int mDataLen = 0;
-    //k线图当前显示区域的最大值
-    protected float mMainMaxValue = Float.MAX_VALUE;
-    //k线图当前显示区域的最小值
-    protected float mMainMinValue = Float.MIN_VALUE;
-    //子图当前显示区域的最大值
-    protected float mChildMaxValue = Float.MAX_VALUE;
-    //子图当前实现区域的最小值
-    protected float mChildMinValue = Float.MIN_VALUE;
-    //显示区域中X开始点在数组的位置
-    protected int mStartIndex = 0;
-    //显示区域中X结束点在数组的位置
-    protected int mStopIndex = 0;
-    //一个点的宽度
-    protected int mPointWidth = 6;
-    //grid的行数
-    protected int mGridRows = 4;
-    //grid的列数
+    private int mChildDrawPosition = 0;
+
+    private float mTranslateX = Float.MIN_VALUE;
+
+    private int mWidth = 0;
+
+    private int mTopPadding;
+
+    private int mBottomPadding;
+
+    private float mMainScaleY = 1;
+
+    private float mChildScaleY = 1;
+
+    private float mDataLen = 0;
+
+    private float mMainMaxValue = Float.MAX_VALUE;
+
+    private float mMainMinValue = Float.MIN_VALUE;
+
+    private float mChildMaxValue = Float.MAX_VALUE;
+
+    private float mChildMinValue = Float.MIN_VALUE;
+
+    private int mStartIndex = 0;
+
+    private int mStopIndex = 0;
+
+    private float mPointWidth = 6;
+
+    private int mGridRows = 4;
+
     private int mGridColumns = 4;
-    //字体大小
-    protected int mTextSize = 10;
-    //表格画笔
-    protected Paint mGridPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    //文字画笔
-    protected Paint mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    //背景画笔
-    protected Paint mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    //长按之后选择的点的序号
-    protected int mSelectedIndex;
-    //Main区域的画图方法
+
+    private Paint mGridPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+    private Paint mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+    private Paint mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+    private Paint mSelectedLinePaint=new Paint(Paint.ANTI_ALIAS_FLAG);
+
+    private int mSelectedIndex;
+
     private IChartDraw mMainDraw;
-    //数据适配器
+
     private IAdapter mAdapter;
-    //数据观察者
+
     private DataSetObserver mDataSetObserver = new DataSetObserver() {
         @Override
         public void onChanged() {
@@ -116,11 +112,16 @@ public abstract class BaseKChartView extends ScrollAndScaleView implements
 
     private long mAnimationDuration = 500;
 
-    private int mBackgroundColor = Color.parseColor("#202326");
-
     private float mOverScrollRange = 0;
 
     private OnSelectedChangedListener mOnSelectedChangedListener = null;
+
+    private Rect mMainRect;
+
+    private Rect mTabRect;
+
+    private Rect mChildRect;
+
     public BaseKChartView(Context context) {
         super(context);
         init();
@@ -140,17 +141,17 @@ public abstract class BaseKChartView extends ScrollAndScaleView implements
         setWillNotDraw(false);
         mDetector = new GestureDetectorCompat(getContext(), this);
         mScaleDetector = new ScaleGestureDetector(getContext(), this);
-        mTopPadding = dp2px(mTopPadding);
-        mBottomPadding = dp2px(mBottomPadding);
-        mMainChildSpace = dp2px(mMainChildSpace);
-        mPointWidth = dp2px(mPointWidth);
-        mTextSize = sp2px(mTextSize);
-        mBackgroundPaint.setColor(getResources().getColor(R.color.chart_background));
-        mGridPaint.setColor(getResources().getColor(R.color.chart_grid_line));
-        mGridPaint.setStrokeWidth(dp2px(1));
-        mTextPaint.setColor(getResources().getColor(R.color.chart_text));
-        mTextPaint.setTextSize(mTextSize);
-        mTextPaint.setStrokeWidth(dp2px(0.5f));
+        mTopPadding = (int) getResources().getDimension(R.dimen.chart_top_padding);
+        mBottomPadding = (int)getResources().getDimension(R.dimen.chart_bottom_padding);
+        mPointWidth = getResources().getDimension(R.dimen.chart_point_width);
+        mBackgroundPaint.setColor(ContextCompat.getColor(getContext(),R.color.chart_background));
+        mGridPaint.setColor(ContextCompat.getColor(getContext(),R.color.chart_grid_line));
+        mGridPaint.setStrokeWidth(getResources().getDimension(R.dimen.chart_grid_line_width));
+        mTextPaint.setColor(ContextCompat.getColor(getContext(),R.color.chart_text));
+        mTextPaint.setTextSize(getResources().getDimension(R.dimen.chart_text_size));
+
+        mSelectedLinePaint.setColor(ContextCompat.getColor(getContext(),R.color.chart_text));
+        mSelectedLinePaint.setStrokeWidth(getResources().getDimension(R.dimen.chart_line_width));
 
         mKChartTabView = new KChartTabView(getContext());
         addView(mKChartTabView, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -176,25 +177,32 @@ public abstract class BaseKChartView extends ScrollAndScaleView implements
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        mMainChildSpace = mKChartTabView.getMeasuredHeight() + dp2px(1);
-        int displayHeight = h - mTopPadding - mBottomPadding - mMainChildSpace;
-        this.mMainHeight = (int) (displayHeight * 0.75f);
-        this.mChildHeight = (int) (displayHeight * 0.25f);
         this.mWidth = w;
-        mKChartTabView.setTranslationY(mMainHeight + mTopPadding);
+        initRect(w,h);
+        mKChartTabView.setTranslationY(mMainRect.bottom);
         setTranslateXFromScrollX(mScrollX);
+    }
+
+    private void initRect(int w,int h)
+    {
+        int mMainChildSpace = mKChartTabView.getMeasuredHeight();
+        int displayHeight = h - mTopPadding - mBottomPadding - mMainChildSpace;
+        int mMainHeight = (int) (displayHeight * 0.75f);
+        int mChildHeight = (int) (displayHeight * 0.25f);
+        mMainRect=new Rect(0,mTopPadding,mWidth,mTopPadding+mMainHeight);
+        mTabRect=new Rect(0,mMainRect.bottom,mWidth,mMainRect.bottom+mMainChildSpace);
+        mChildRect=new Rect(0,mTabRect.bottom,mWidth,mTabRect.bottom+mChildHeight);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawColor(mBackgroundColor);
-        if (mWidth == 0 || mMainHeight == 0 || mItemCount == 0) {
+        canvas.drawColor(mBackgroundPaint.getColor());
+        if (mWidth == 0 || mMainRect.height() == 0 || mItemCount == 0) {
             return;
         }
         calculateValue();
         canvas.save();
-        canvas.translate(0, mTopPadding);
         canvas.scale(1, 1);
         drawGird(canvas);
         drawK(canvas);
@@ -204,11 +212,11 @@ public abstract class BaseKChartView extends ScrollAndScaleView implements
     }
 
     public float getMainY(float value) {
-        return (mMainMaxValue - value) * mMainScaleY;
+        return (mMainMaxValue - value) * mMainScaleY+mMainRect.top;
     }
 
     public float getChildY(float value) {
-        return (mChildMaxValue - value) * mChildScaleY + mMainHeight + mMainChildSpace;
+        return (mChildMaxValue - value) * mChildScaleY +mChildRect.top;
     }
 
     /**
@@ -226,19 +234,19 @@ public abstract class BaseKChartView extends ScrollAndScaleView implements
     private void drawGird(Canvas canvas) {
         //-----------------------上方k线图------------------------
         //横向的grid
-        float rowSpace = mMainHeight / mGridRows;
+        float rowSpace = mMainRect.height() / mGridRows;
         for (int i = 0; i <= mGridRows; i++) {
-            canvas.drawLine(0, rowSpace * i, mWidth, rowSpace * i, mGridPaint);
+            canvas.drawLine(0, rowSpace * i+mMainRect.top, mWidth, rowSpace * i+mMainRect.top, mGridPaint);
         }
         //-----------------------下方子图------------------------
-        canvas.drawLine(0, mMainHeight + mMainChildSpace, mWidth, mMainHeight + mMainChildSpace, mGridPaint);
-        canvas.drawLine(0, mMainHeight + mMainChildSpace + mChildHeight, mWidth, mMainHeight + mMainChildSpace + mChildHeight, mGridPaint);
+        canvas.drawLine(0, mChildRect.top, mWidth, mChildRect.top, mGridPaint);
+        canvas.drawLine(0, mChildRect.bottom, mWidth, mChildRect.bottom, mGridPaint);
 
         //纵向的grid
         float columnSpace = mWidth / mGridColumns;
         for (int i = 0; i <= mGridColumns; i++) {
-            canvas.drawLine(columnSpace * i, 0, columnSpace * i, mMainHeight, mGridPaint);
-            canvas.drawLine(columnSpace * i, mMainHeight + mMainChildSpace, columnSpace * i, mMainHeight + mMainChildSpace + mChildHeight, mGridPaint);
+            canvas.drawLine(columnSpace * i, mMainRect.top, columnSpace * i, mMainRect.bottom, mGridPaint);
+            canvas.drawLine(columnSpace * i, mChildRect.top, columnSpace * i, mChildRect.bottom, mGridPaint);
         }
     }
 
@@ -269,9 +277,9 @@ public abstract class BaseKChartView extends ScrollAndScaleView implements
             KLineImpl point = (KLineImpl) getItem(mSelectedIndex);
             float x = getX(mSelectedIndex);
             float y = getMainY(point.getClosePrice());
-            canvas.drawLine(x, 0, x, mMainHeight, mTextPaint);
-            canvas.drawLine(-mTranslateX, y, -mTranslateX + mWidth / mScaleX, y, mTextPaint);
-            canvas.drawLine(x, mMainHeight + mMainChildSpace, x, mMainHeight + mMainChildSpace + mChildHeight, mTextPaint);
+            canvas.drawLine(x, mMainRect.top, x, mMainRect.bottom, mSelectedLinePaint);
+            canvas.drawLine(-mTranslateX, y, -mTranslateX + mWidth / mScaleX, y, mSelectedLinePaint);
+            canvas.drawLine(x,mChildRect.top, x,mChildRect.bottom, mSelectedLinePaint);
         }
         //还原 平移缩放
         canvas.restore();
@@ -287,23 +295,23 @@ public abstract class BaseKChartView extends ScrollAndScaleView implements
         float baseLine = (textHeight - fm.bottom - fm.top) / 2;
         //--------------画上方k线图的值-------------
         if (mMainDraw != null) {
-            canvas.drawText(formatValue(mMainMaxValue), 0, baseLine, mTextPaint);
-            canvas.drawText(formatValue(mMainMinValue), 0, mMainHeight, mTextPaint);
+            canvas.drawText(formatValue(mMainMaxValue), 0, baseLine+mMainRect.top, mTextPaint);
+            canvas.drawText(formatValue(mMainMinValue), 0, mMainRect.bottom-textHeight+baseLine, mTextPaint);
             float rowValue = (mMainMaxValue - mMainMinValue) / mGridRows;
-            float rowSpace = mMainHeight / mGridRows;
+            float rowSpace = mMainRect.height() / mGridRows;
             for (int i = 1; i < mGridRows; i++) {
                 String text = formatValue(rowValue * (mGridRows - i) + mMainMinValue);
-                canvas.drawText(text, 0, fixTextY(rowSpace * i), mTextPaint);
+                canvas.drawText(text, 0, fixTextY(rowSpace * i+mMainRect.top), mTextPaint);
             }
         }
         //--------------画下方子图的值-------------
         if (mChildDraw != null) {
-            canvas.drawText(formatValue(mChildMaxValue), 0, mMainHeight + mMainChildSpace + baseLine, mTextPaint);
-            canvas.drawText(formatValue(mChildMinValue), 0, mMainHeight + mMainChildSpace + mChildHeight, mTextPaint);
+            canvas.drawText(formatValue(mChildMaxValue), 0, mChildRect.top+ baseLine, mTextPaint);
+            canvas.drawText(formatValue(mChildMinValue), 0, mChildRect.bottom, mTextPaint);
         }
         //--------------画时间---------------------
         float columnSpace = mWidth / mGridColumns;
-        float y = mMainHeight + mMainChildSpace + mChildHeight + baseLine;
+        float y = mChildRect.bottom + baseLine;
 
         float startX = getX(mStartIndex) - mPointWidth / 2;
         float stopX = getX(mStopIndex) + mPointWidth / 2;
@@ -351,7 +359,7 @@ public abstract class BaseKChartView extends ScrollAndScaleView implements
     private void drawValue(Canvas canvas, int position) {
         if (position >= 0 && position < mItemCount) {
             if (mMainDraw != null) {
-                float y = -dp2px(1);
+                float y =mMainRect.top -dp2px(1);
                 float x = dp2px(1);
                 mMainDraw.drawText(canvas, this, position, x, y);
             }
@@ -359,7 +367,7 @@ public abstract class BaseKChartView extends ScrollAndScaleView implements
                 Paint.FontMetrics fm = mTextPaint.getFontMetrics();
                 float textHeight = fm.descent - fm.ascent;
                 float baseLine = (textHeight - fm.bottom - fm.top) / 2;
-                float y = mMainHeight + mMainChildSpace + baseLine;
+                float y = mChildRect.top + baseLine;
                 float x = mTextPaint.measureText(formatValue(mChildMaxValue) + " ");
                 mChildDraw.drawText(canvas, this, position, x, y);
             }
@@ -389,7 +397,7 @@ public abstract class BaseKChartView extends ScrollAndScaleView implements
      */
     public void notifyChanged() {
         if (mItemCount != 0) {
-            mXs.clear();
+            mXs=new ArrayList<>(mItemCount);
             mDataLen = (mItemCount - 1) * mPointWidth;
             for (int i = 0; i < mItemCount; i++) {
                 float x = i * mPointWidth;
@@ -464,8 +472,8 @@ public abstract class BaseKChartView extends ScrollAndScaleView implements
         float padding = (mMainMaxValue - mMainMinValue) * 0.05f;
         mMainMaxValue += padding;
         mMainMinValue -= padding;
-        mMainScaleY = mMainHeight * 1f / (mMainMaxValue - mMainMinValue);
-        mChildScaleY = mChildHeight * 1f / (mChildMaxValue - mChildMinValue);
+        mMainScaleY = mMainRect.height() * 1f / (mMainMaxValue - mMainMinValue);
+        mChildScaleY = mChildRect.height() * 1f / (mChildMaxValue - mChildMinValue);
         if (mAnimator.isRunning()) {
             float value = (float) mAnimator.getAnimatedValue();
             mStopIndex = mStartIndex + Math.round(value * (mStopIndex - mStartIndex));
@@ -531,14 +539,6 @@ public abstract class BaseKChartView extends ScrollAndScaleView implements
     @Override
     public IAdapter getAdapter() {
         return mAdapter;
-    }
-
-    public int getMainHeight() {
-        return mMainHeight;
-    }
-
-    public int getTabBarHeight() {
-        return mMainChildSpace;
     }
 
     /**
@@ -764,4 +764,72 @@ public abstract class BaseKChartView extends ScrollAndScaleView implements
         }
         mOverScrollRange = overScrollRange;
     }
+
+    /**
+     * 设置上方padding
+     * @param topPadding
+     */
+    public void setTopPadding(int topPadding) {
+        mTopPadding = topPadding;
+    }
+
+    /**
+     * 设置下方padding
+     * @param bottomPadding
+     */
+    public void setBottomPadding(int bottomPadding) {
+        mBottomPadding = bottomPadding;
+    }
+
+    /**
+     * 设置表格线宽度
+     */
+    public void setGridLineWidth(float width) {
+        mGridPaint.setStrokeWidth(width);
+    }
+
+    /**
+     * 设置表格线颜色
+     */
+    public void setGridLineColor(int color) {
+        mGridPaint.setColor(color);
+    }
+
+    /**
+     * 设置选择线宽度
+     */
+    public void setSelectedLineWidth(float width) {
+        mSelectedLinePaint.setStrokeWidth(width);
+    }
+
+    /**
+     * 设置表格线颜色
+     */
+    public void setSelectedLineColor(int color) {
+        mSelectedLinePaint.setColor(color);
+    }
+
+    /**
+     *设置文字颜色
+     */
+    public void setTextColor(int color) {
+        mTextPaint.setColor(color);
+    }
+
+    /**
+     * 设置文字大小
+     */
+    public void setTextSize(float textSize)
+    {
+        mTextPaint.setTextSize(textSize);
+    }
+
+    /**
+     * 设置背景颜色
+     */
+    public void setBackgroundColor(int color) {
+        mBackgroundPaint.setColor(color);
+    }
+
+
 }

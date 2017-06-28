@@ -66,10 +66,10 @@ public class ExampleActivity extends AppCompatActivity {
                 Log.i("onSelectedChanged", "index:" + index + " closePrice:" + data.getClosePrice());
             }
         });
-        mKChartView.setOverScrollRange(ViewUtil.Dp2Px(this, 100));
     }
 
     private void initData() {
+        mKChartView.showLoading();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -92,6 +92,7 @@ public class ExampleActivity extends AppCompatActivity {
                     public void run() {
                         mAdapter.addFooterData(data);
                         mKChartView.startAnimation();
+                        mKChartView.refreshCompelete();
                     }
                 });
             }

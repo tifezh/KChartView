@@ -16,24 +16,27 @@ import android.widget.RelativeLayout;
 public abstract class ScrollAndScaleView extends RelativeLayout implements
         GestureDetector.OnGestureListener,
         ScaleGestureDetector.OnScaleGestureListener {
-    //x轴的偏移量
     protected int mScrollX = 0;
     protected GestureDetectorCompat mDetector;
     protected ScaleGestureDetector mScaleDetector;
-    //是否是长按事件
+
     protected boolean isLongPress = false;
 
     private OverScroller mScroller;
-    //是否在触摸中
+
     protected boolean touch = false;
 
     protected float mScaleX = 1;
-    //x轴最大的缩放程度
+
     protected float mScaleXMax = 2f;
-    //x轴最小的缩放程度
+
     protected float mScaleXMin = 0.5f;
 
     private boolean mMultipleTouch=false;
+
+    private boolean mScrollEnable=true;
+
+    private boolean mScaleEnable=true;
 
     public ScrollAndScaleView(Context context) {
         super(context);
@@ -115,6 +118,10 @@ public abstract class ScrollAndScaleView extends RelativeLayout implements
 
     @Override
     public void scrollTo(int x, int y) {
+        if(!isScrollEnable())
+        {
+            return;
+        }
         int oldX = mScrollX;
         mScrollX = x;
         checkAndFixScrollX();
@@ -124,6 +131,10 @@ public abstract class ScrollAndScaleView extends RelativeLayout implements
 
     @Override
     public boolean onScale(ScaleGestureDetector detector) {
+        if(!isScaleEnable())
+        {
+            return false;
+        }
         float oldScale=mScaleX;
         mScaleX *= detector.getScaleFactor();
         if (mScaleX < mScaleXMin) {
@@ -247,5 +258,49 @@ public abstract class ScrollAndScaleView extends RelativeLayout implements
             onLeftSide();
             mScroller.forceFinished(true);
         }
+    }
+
+    public float getScaleXMax() {
+        return mScaleXMax;
+    }
+
+    public float getScaleXMin() {
+        return mScaleXMin;
+    }
+
+    public boolean isScrollEnable() {
+        return mScrollEnable;
+    }
+
+    public boolean isScaleEnable() {
+        return mScaleEnable;
+    }
+
+    /**
+     * 设置缩放的最大值
+     */
+    public void setScaleXMax(float scaleXMax) {
+        mScaleXMax = scaleXMax;
+    }
+
+    /**
+     * 设置缩放的最小值
+     */
+    public void setScaleXMin(float scaleXMin) {
+        mScaleXMin = scaleXMin;
+    }
+
+    /**
+     * 设置是否可以滑动
+     */
+    public void setScrollEnable(boolean scrollEnable) {
+        mScrollEnable = scrollEnable;
+    }
+
+    /**
+     * 设置是否可以缩放
+     */
+    public void setScaleEnable(boolean scaleEnable) {
+        mScaleEnable = scaleEnable;
     }
 }

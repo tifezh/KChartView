@@ -25,4 +25,5 @@ dependencies {
     compile project(path: ':kchartlib')
     compile 'org.apache.httpcomponents:httpcore:4.4.4'
     compile 'com.jakewharton:butterknife:7.0.1'
+    compile 'com.google.code.gson:gson:2.7'
 }

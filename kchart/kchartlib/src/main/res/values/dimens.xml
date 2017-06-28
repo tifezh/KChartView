@@ -1,4 +1,11 @@
 <resources>
     <dimen name="chart_text_size">10sp</dimen>
     <dimen name="chart_selector_text_size">12sp</dimen>
+    <dimen name="chart_candle_line_width">1dp</dimen>
+    <dimen name="chart_candle_width">4dp</dimen>
+    <dimen name="chart_line_width">0.5dp</dimen>
+    <dimen name="chart_grid_line_width">1dp</dimen>
+    <dimen name="chart_point_width">6dp</dimen>
+    <dimen name="chart_top_padding">15dp</dimen>
+    <dimen name="chart_bottom_padding">15dp</dimen>
 </resources>
