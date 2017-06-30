@@ -4,6 +4,8 @@ import android.graphics.Canvas;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.github.tifezh.kchartlib.chart.BaseKChartView;
+
 
 /**
  * 画图的基类 根据实体来画图形
@@ -22,7 +24,7 @@ public interface IChartDraw<T> {
      * @param lastX     上一个点的x坐标
      * @param curX      当前点的X坐标
      */
-    void drawTranslated(@Nullable T lastPoint, @NonNull T curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull IKChartView view, int position);
+    void drawTranslated(@Nullable T lastPoint, @NonNull T curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull BaseKChartView view, int position);
 
     /**
      * @param canvas
@@ -31,7 +33,7 @@ public interface IChartDraw<T> {
      * @param x        x的起始坐标
      * @param y        y的起始坐标
      */
-    void drawText(@NonNull Canvas canvas, @NonNull IKChartView view, int position, float x, float y);
+    void drawText(@NonNull Canvas canvas, @NonNull BaseKChartView view, int position, float x, float y);
 
     /**
      * 获取当前实体中最大的值

@@ -8,9 +8,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 
 import com.github.tifezh.kchartlib.R;
+import com.github.tifezh.kchartlib.chart.BaseKChartView;
 import com.github.tifezh.kchartlib.chart.EntityImpl.MACDImpl;
 import com.github.tifezh.kchartlib.chart.impl.IChartDraw;
-import com.github.tifezh.kchartlib.chart.impl.IKChartView;
 
 /**
  * macd实现类
@@ -26,35 +26,21 @@ public class MACDDraw implements IChartDraw<MACDImpl> {
     private Paint mMACDPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private float mMACDWidth = 0;
 
-    public MACDDraw(Context context) {
-        mMACDWidth = context.getResources().getDimension(R.dimen.chart_candle_width);
-        float lineWidth = context.getResources().getDimension(R.dimen.chart_line_width);
-        float textSize = context.getResources().getDimension(R.dimen.chart_text_size);
+    public MACDDraw(BaseKChartView view) {
+        Context context=view.getContext();
         mRedPaint.setColor(ContextCompat.getColor(context,R.color.chart_red));
         mGreenPaint.setColor(ContextCompat.getColor(context,R.color.chart_green));
-
-        mDIFPaint.setColor(ContextCompat.getColor(context,R.color.chart_ma5));
-        mDIFPaint.setStrokeWidth(lineWidth);
-        mDIFPaint.setTextSize(textSize);
-
-        mDEAPaint.setColor(ContextCompat.getColor(context,R.color.chart_ma10));
-        mDEAPaint.setStrokeWidth(lineWidth);
-        mDEAPaint.setTextSize(textSize);
-
-        mMACDPaint.setColor(ContextCompat.getColor(context,R.color.chart_ma20));
-        mMACDPaint.setStrokeWidth(lineWidth);
-        mMACDPaint.setTextSize(textSize);
     }
 
     @Override
-    public void drawTranslated(@Nullable MACDImpl lastPoint, @NonNull MACDImpl curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull IKChartView view, int position) {
+    public void drawTranslated(@Nullable MACDImpl lastPoint, @NonNull MACDImpl curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull BaseKChartView view, int position) {
         drawMACD(canvas, view, curX, curPoint.getMacd());
         view.drawChildLine(canvas, mDIFPaint, lastX, lastPoint.getDea(), curX, curPoint.getDea());
         view.drawChildLine(canvas, mDEAPaint, lastX, lastPoint.getDif(), curX, curPoint.getDif());
     }
 
     @Override
-    public void drawText(@NonNull Canvas canvas, @NonNull IKChartView view, int position, float x, float y) {
+    public void drawText(@NonNull Canvas canvas, @NonNull BaseKChartView view, int position, float x, float y) {
         String text = "";
         MACDImpl point = (MACDImpl) view.getItem(position);
         text = "DIF:" + view.formatValue(point.getDif()) + " ";
@@ -83,13 +69,14 @@ public class MACDDraw implements IChartDraw<MACDImpl> {
      * @param x
      * @param macd
      */
-    private void drawMACD(Canvas canvas, IKChartView view, float x, float macd) {
-        macd = view.getChildY(macd);
+    private void drawMACD(Canvas canvas, BaseKChartView view, float x, float macd) {
+        float macdy = view.getChildY(macd);
         float r = mMACDWidth / 2;
-        if (macd > view.getChildY(0)) {
-            canvas.drawRect(x - r, view.getChildY(0), x + r, macd, mRedPaint);
+        float zeroy=view.getChildY(0);
+        if (macd > 0) {
+            canvas.drawRect(x - r, macdy, x + r, zeroy, mRedPaint);
         } else {
-            canvas.drawRect(x - r, macd, x + r, view.getChildY(0), mGreenPaint);
+            canvas.drawRect(x - r, zeroy, x + r, macdy, mGreenPaint);
         }
     }
 
@@ -120,5 +107,25 @@ public class MACDDraw implements IChartDraw<MACDImpl> {
      */
     public void setMACDWidth(float MACDWidth) {
         mMACDWidth = MACDWidth;
+    }
+
+    /**
+     * 设置曲线宽度
+     */
+    public void setLineWidth(float width)
+    {
+        mDEAPaint.setStrokeWidth(width);
+        mDIFPaint.setStrokeWidth(width);
+        mMACDPaint.setStrokeWidth(width);
+    }
+
+    /**
+     * 设置文字大小
+     */
+    public void setTextSize(float textSize)
+    {
+        mDEAPaint.setTextSize(textSize);
+        mDIFPaint.setTextSize(textSize);
+        mMACDPaint.setTextSize(textSize);
     }
 }

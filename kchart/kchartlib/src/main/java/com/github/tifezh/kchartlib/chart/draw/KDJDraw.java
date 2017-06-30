@@ -1,16 +1,13 @@
 package com.github.tifezh.kchartlib.chart.draw;
 
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 
-import com.github.tifezh.kchartlib.R;
+import com.github.tifezh.kchartlib.chart.BaseKChartView;
 import com.github.tifezh.kchartlib.chart.EntityImpl.KDJImpl;
 import com.github.tifezh.kchartlib.chart.impl.IChartDraw;
-import com.github.tifezh.kchartlib.chart.impl.IKChartView;
 
 /**
  * KDJ实现类
@@ -23,35 +20,18 @@ public class KDJDraw implements IChartDraw<KDJImpl> {
     private Paint mDPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mJPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-    private Context mContext;
-
-    public KDJDraw(Context context) {
-        mContext=context;
-        float lineWidth = context.getResources().getDimension(R.dimen.chart_line_width);
-        float textSize = context.getResources().getDimension(R.dimen.chart_text_size);
-
-        mKPaint.setColor(ContextCompat.getColor(context,R.color.chart_ma5));
-        mKPaint.setStrokeWidth(lineWidth);
-        mKPaint.setTextSize(textSize);
-
-        mDPaint.setColor(ContextCompat.getColor(context,R.color.chart_ma10));
-        mDPaint.setStrokeWidth(lineWidth);
-        mDPaint.setTextSize(textSize);
-
-        mJPaint.setColor(ContextCompat.getColor(context,R.color.chart_ma20));
-        mJPaint.setStrokeWidth(lineWidth);
-        mJPaint.setTextSize(textSize);
+    public KDJDraw(BaseKChartView view) {
     }
 
     @Override
-    public void drawTranslated(@Nullable KDJImpl lastPoint, @NonNull KDJImpl curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull IKChartView view, int position) {
+    public void drawTranslated(@Nullable KDJImpl lastPoint, @NonNull KDJImpl curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull BaseKChartView view, int position) {
         view.drawChildLine(canvas, mKPaint, lastX, lastPoint.getK(), curX, curPoint.getK());
         view.drawChildLine(canvas, mDPaint, lastX, lastPoint.getD(), curX, curPoint.getD());
         view.drawChildLine(canvas, mJPaint, lastX, lastPoint.getJ(), curX, curPoint.getJ());
     }
 
     @Override
-    public void drawText(@NonNull Canvas canvas, @NonNull IKChartView view, int position, float x, float y) {
+    public void drawText(@NonNull Canvas canvas, @NonNull BaseKChartView view, int position, float x, float y) {
         String text = "";
         KDJImpl point = (KDJImpl) view.getItem(position);
         text = "K:" + view.formatValue(point.getK()) + " ";
@@ -93,5 +73,25 @@ public class KDJDraw implements IChartDraw<KDJImpl> {
      */
     public void setJColor(int color) {
         mJPaint.setColor(color);
+    }
+
+    /**
+     * 设置曲线宽度
+     */
+    public void setLineWidth(float width)
+    {
+        mKPaint.setStrokeWidth(width);
+        mDPaint.setStrokeWidth(width);
+        mJPaint.setStrokeWidth(width);
+    }
+
+    /**
+     * 设置文字大小
+     */
+    public void setTextSize(float textSize)
+    {
+        mKPaint.setTextSize(textSize);
+        mDPaint.setTextSize(textSize);
+        mJPaint.setTextSize(textSize);
     }
 }

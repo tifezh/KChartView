@@ -11,13 +11,13 @@
             android:id="@+id/tab_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:textColor="@drawable/tab_text_color_selector" />
+            android:layout_centerInParent="true"/>
 
         <View
+            android:id="@+id/indicator"
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@drawable/tab_indicator_selector"
-            android:layout_alignParentBottom="true" />
+            android:layout_alignParentBottom="true"
+            android:visibility="invisible"/>
     </RelativeLayout>
 </LinearLayout>

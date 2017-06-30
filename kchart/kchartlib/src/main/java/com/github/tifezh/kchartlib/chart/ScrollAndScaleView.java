@@ -303,4 +303,9 @@ public abstract class ScrollAndScaleView extends RelativeLayout implements
     public void setScaleEnable(boolean scaleEnable) {
         mScaleEnable = scaleEnable;
     }
+
+    @Override
+    public float getScaleX() {
+        return mScaleX;
+    }
 }

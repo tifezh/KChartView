@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="KChartView">
+        <!--公共的-->
+        <attr name="kc_text_size" format="dimension"/>
+        <attr name="kc_text_color" format="color"/>
+        <attr name="kc_line_width" format="dimension"/>
+        <attr name="kc_background_color" format="color"/>
+        <attr name="kc_selected_line_color" format="color"/>
+        <attr name="kc_selected_line_width" format="dimension"/>
+        <attr name="kc_grid_line_width" format="dimension"/>
+        <attr name="kc_grid_line_color" format="color"/>
+        <attr name="kc_point_width" format="dimension"/>
+        <!--macd-->
+        <attr name="kc_macd_width" format="dimension"/>
+        <attr name="kc_dif_color" format="color"/>
+        <attr name="kc_dea_color" format="color"/>
+        <attr name="kc_macd_color" format="color"/>
+        <!--kdj-->
+        <attr name="kc_k_color" format="color"/>
+        <attr name="kc_d_color" format="color"/>
+        <attr name="kc_j_color" format="color"/>
+        <!--rsi-->
+        <attr name="kc_rsi1_color" format="color"/>
+        <attr name="kc_rsi2_color" format="color"/>
+        <attr name="kc_ris3_color" format="color"/>
+        <!--boll-->
+        <attr name="kc_up_color" format="color"/>
+        <attr name="kc_mb_color" format="color"/>
+        <attr name="kc_dn_color" format="color"/>
+        <!--main-->
+        <attr name="kc_ma5_color" format="color"/>
+        <attr name="kc_ma10_color" format="color"/>
+        <attr name="kc_ma20_color" format="color"/>
+        <attr name="kc_candle_width" format="dimension"/>
+        <attr name="kc_candle_line_width" format="dimension"/>
+        <attr name="kc_selector_background_color" format="color"/>
+        <attr name="kc_selector_text_size" format="dimension"/>
+        <attr name="kc_candle_solid" format="boolean"/>
+        <!--tab-->
+        <attr name="kc_tab_background_color" format="color"/>
+        <attr name="kc_tab_text_color" format="color"/>
+        <attr name="kc_tab_indicator_color" format="color"/>
+    </declare-styleable>
+</resources>

@@ -12,11 +12,10 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.github.tifezh.kchart.chart.KChartAdapter;
-import com.github.tifezh.kchart.chart.KChartView;
+import com.github.tifezh.kchartlib.chart.KChartView;
 import com.github.tifezh.kchart.chart.KLineEntity;
+import com.github.tifezh.kchartlib.chart.BaseKChartView;
 import com.github.tifezh.kchartlib.chart.formatter.DateFormatter;
-import com.github.tifezh.kchartlib.chart.impl.IKChartView;
-import com.github.tifezh.kchartlib.utils.ViewUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -41,7 +40,14 @@ public class ExampleActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_example);
+        int type=getIntent().getIntExtra("type",0);
+        if(type==0)
+        {
+            setContentView(R.layout.activity_example);
+        }
+        else {
+            setContentView(R.layout.activity_example_light);
+        }
         ButterKnife.bind(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             Window window = getWindow();
@@ -59,9 +65,9 @@ public class ExampleActivity extends AppCompatActivity {
         mKChartView.setDateTimeFormatter(new DateFormatter());
         mKChartView.setGridRows(4);
         mKChartView.setGridColumns(4);
-        mKChartView.setOnSelectedChangedListener(new IKChartView.OnSelectedChangedListener() {
+        mKChartView.setOnSelectedChangedListener(new BaseKChartView.OnSelectedChangedListener(){
             @Override
-            public void onSelectedChanged(IKChartView view, Object point, int index) {
+            public void onSelectedChanged(BaseKChartView view, Object point, int index) {
                 KLineEntity data = (KLineEntity) point;
                 Log.i("onSelectedChanged", "index:" + index + " closePrice:" + data.getClosePrice());
             }
@@ -92,7 +98,7 @@ public class ExampleActivity extends AppCompatActivity {
                     public void run() {
                         mAdapter.addFooterData(data);
                         mKChartView.startAnimation();
-                        mKChartView.refreshCompelete();
+                        mKChartView.refreshEnd();
                     }
                 });
             }

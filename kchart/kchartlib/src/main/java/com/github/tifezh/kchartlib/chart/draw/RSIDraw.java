@@ -1,16 +1,13 @@
 package com.github.tifezh.kchartlib.chart.draw;
 
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 
-import com.github.tifezh.kchartlib.R;
+import com.github.tifezh.kchartlib.chart.BaseKChartView;
 import com.github.tifezh.kchartlib.chart.EntityImpl.RSIImpl;
 import com.github.tifezh.kchartlib.chart.impl.IChartDraw;
-import com.github.tifezh.kchartlib.chart.impl.IKChartView;
 
 /**
  * RSI实现类
@@ -23,32 +20,19 @@ public class RSIDraw implements IChartDraw<RSIImpl> {
     private Paint mRSI2Paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mRSI3Paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-    public RSIDraw(Context context) {
-        float lineWidth = context.getResources().getDimension(R.dimen.chart_line_width);
-        float textSize = context.getResources().getDimension(R.dimen.chart_text_size);
+    public RSIDraw(BaseKChartView view) {
 
-        mRSI1Paint.setColor(ContextCompat.getColor(context,R.color.chart_ma5));
-        mRSI1Paint.setStrokeWidth(lineWidth);
-        mRSI1Paint.setTextSize(textSize);
-
-        mRSI2Paint.setColor(ContextCompat.getColor(context,R.color.chart_ma10));
-        mRSI2Paint.setStrokeWidth(lineWidth);
-        mRSI2Paint.setTextSize(textSize);
-
-        mRSI3Paint.setColor(ContextCompat.getColor(context,R.color.chart_ma20));
-        mRSI3Paint.setStrokeWidth(lineWidth);
-        mRSI3Paint.setTextSize(textSize);
     }
 
     @Override
-    public void drawTranslated(@Nullable RSIImpl lastPoint, @NonNull RSIImpl curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull IKChartView view, int position) {
+    public void drawTranslated(@Nullable RSIImpl lastPoint, @NonNull RSIImpl curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull BaseKChartView view, int position) {
         view.drawChildLine(canvas, mRSI1Paint, lastX, lastPoint.getRsi1(), curX, curPoint.getRsi1());
         view.drawChildLine(canvas, mRSI2Paint, lastX, lastPoint.getRsi2(), curX, curPoint.getRsi2());
         view.drawChildLine(canvas, mRSI3Paint, lastX, lastPoint.getRsi3(), curX, curPoint.getRsi3());
     }
 
     @Override
-    public void drawText(@NonNull Canvas canvas, @NonNull IKChartView view, int position, float x, float y) {
+    public void drawText(@NonNull Canvas canvas, @NonNull BaseKChartView view, int position, float x, float y) {
         String text = "";
         RSIImpl point = (RSIImpl) view.getItem(position);
         text = "RSI1:" + view.formatValue(point.getRsi1()) + " ";
@@ -81,5 +65,25 @@ public class RSIDraw implements IChartDraw<RSIImpl> {
 
     public void setRSI3Color(int color) {
         mRSI3Paint.setColor(color);
+    }
+
+    /**
+     * 设置曲线宽度
+     */
+    public void setLineWidth(float width)
+    {
+        mRSI1Paint.setStrokeWidth(width);
+        mRSI2Paint.setStrokeWidth(width);
+        mRSI3Paint.setStrokeWidth(width);
+    }
+
+    /**
+     * 设置文字大小
+     */
+    public void setTextSize(float textSize)
+    {
+        mRSI2Paint.setTextSize(textSize);
+        mRSI3Paint.setTextSize(textSize);
+        mRSI1Paint.setTextSize(textSize);
     }
 }

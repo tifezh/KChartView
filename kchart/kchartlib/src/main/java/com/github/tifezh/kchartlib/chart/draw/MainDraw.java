@@ -9,10 +9,10 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 
 import com.github.tifezh.kchartlib.R;
+import com.github.tifezh.kchartlib.chart.BaseKChartView;
 import com.github.tifezh.kchartlib.chart.EntityImpl.CandleImpl;
 import com.github.tifezh.kchartlib.chart.EntityImpl.KLineImpl;
 import com.github.tifezh.kchartlib.chart.impl.IChartDraw;
-import com.github.tifezh.kchartlib.chart.impl.IKChartView;
 import com.github.tifezh.kchartlib.utils.ViewUtil;
 
 import java.util.ArrayList;
@@ -33,42 +33,21 @@ public class MainDraw implements IChartDraw<CandleImpl>{
     private Paint ma10Paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint ma20Paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-    private Context mContext;
     private Paint mSelectorTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mSelectorBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    /**
-     * 构造方法
-     * @param context
-     */
-    public MainDraw(Context context) {
-        this.mContext=context;
-        mSelectorTextPaint.setColor(ContextCompat.getColor(context,R.color.chart_text));
-        mSelectorTextPaint.setTextSize(context.getResources().getDimension(R.dimen.chart_selector_text_size));
-        mSelectorBackgroundPaint.setColor(ContextCompat.getColor(context,R.color.chart_selector));
-        mSelectorBackgroundPaint.setAlpha(200);
+    private Context mContext;
 
-        mCandleWidth = context.getResources().getDimension(R.dimen.chart_candle_width);
-        mCandleLineWidth = context.getResources().getDimension(R.dimen.chart_candle_line_width);
-        float lineWidth = context.getResources().getDimension(R.dimen.chart_line_width);
-        float textSize = context.getResources().getDimension(R.dimen.chart_text_size);
+    private boolean mCandleSolid=true;
+
+    public MainDraw(BaseKChartView view) {
+        Context context=view.getContext();
+        mContext=context;
         mRedPaint.setColor(ContextCompat.getColor(context,R.color.chart_red));
         mGreenPaint.setColor(ContextCompat.getColor(context,R.color.chart_green));
-
-        ma5Paint.setColor(ContextCompat.getColor(context,R.color.chart_ma5));
-        ma5Paint.setStrokeWidth(lineWidth);
-        ma5Paint.setTextSize(textSize);
-
-        ma10Paint.setColor(ContextCompat.getColor(context,R.color.chart_ma10));
-        ma10Paint.setStrokeWidth(lineWidth);
-        ma10Paint.setTextSize(textSize);
-
-        ma20Paint.setColor(ContextCompat.getColor(context,R.color.chart_ma20));
-        ma20Paint.setStrokeWidth(lineWidth);
-        ma20Paint.setTextSize(textSize);
     }
 
     @Override
-    public void drawTranslated(@Nullable CandleImpl lastPoint, @NonNull CandleImpl curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull IKChartView view, int position) {
+    public void drawTranslated(@Nullable CandleImpl lastPoint, @NonNull CandleImpl curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull BaseKChartView view, int position) {
         drawCandle(view, canvas, curX, curPoint.getHighPrice(), curPoint.getLowPrice(), curPoint.getOpenPrice(), curPoint.getClosePrice());
         //画ma5
         if (lastPoint.getMA5Price() != 0) {
@@ -85,7 +64,7 @@ public class MainDraw implements IChartDraw<CandleImpl>{
     }
 
     @Override
-    public void drawText(@NonNull Canvas canvas, @NonNull IKChartView view, int position, float x, float y) {
+    public void drawText(@NonNull Canvas canvas, @NonNull BaseKChartView view, int position, float x, float y) {
         CandleImpl point = (KLineImpl) view.getItem(position);
         String text = "MA5:" + view.formatValue(point.getMA5Price()) + " ";
         canvas.drawText(text, x, y, ma5Paint);
@@ -119,7 +98,7 @@ public class MainDraw implements IChartDraw<CandleImpl>{
      * @param open   开盘价
      * @param close  收盘价
      */
-    private void drawCandle(IKChartView view, Canvas canvas, float x, float high, float low, float open, float close) {
+    private void drawCandle(BaseKChartView view, Canvas canvas, float x, float high, float low, float open, float close) {
         high = view.getMainY(high);
         low = view.getMainY(low);
         open = view.getMainY(open);
@@ -128,8 +107,21 @@ public class MainDraw implements IChartDraw<CandleImpl>{
         float lineR = mCandleLineWidth / 2;
         if (open > close) {
             //实心
-            canvas.drawRect(x - r, close, x + r, open, mRedPaint);
-            canvas.drawRect(x - lineR, high, x + lineR, low, mRedPaint);
+            if(mCandleSolid) {
+                canvas.drawRect(x - r, close, x + r, open, mRedPaint);
+                canvas.drawRect(x - lineR, high, x + lineR, low, mRedPaint);
+            }
+            else {
+                mRedPaint.setStrokeWidth(mCandleLineWidth);
+                canvas.drawLine(x, high, x, close, mRedPaint);
+                canvas.drawLine(x, open, x, low, mRedPaint);
+                canvas.drawLine(x - r + lineR, open, x - r + lineR, close, mRedPaint);
+                canvas.drawLine(x + r - lineR, open, x + r - lineR, close, mRedPaint);
+                mRedPaint.setStrokeWidth(mCandleLineWidth * view.getScaleX());
+                canvas.drawLine(x - r, open, x + r, open, mRedPaint);
+                canvas.drawLine(x - r, close, x + r, close, mRedPaint);
+            }
+
         } else if (open < close) {
             canvas.drawRect(x - r, open, x + r, close, mGreenPaint);
             canvas.drawRect(x - lineR, high, x + lineR, low, mGreenPaint);
@@ -144,7 +136,7 @@ public class MainDraw implements IChartDraw<CandleImpl>{
      * @param view
      * @param canvas
      */
-    private void drawSelector(IKChartView view, Canvas canvas) {
+    private void drawSelector(BaseKChartView view, Canvas canvas) {
         Paint.FontMetrics metrics = mSelectorTextPaint.getFontMetrics();
         float textHeight = metrics.descent - metrics.ascent;
 
@@ -236,12 +228,45 @@ public class MainDraw implements IChartDraw<CandleImpl>{
     }
 
     /**
+     * 设置选择器文字大小
+     * @param textSize
+     */
+    public void setSelectorTextSize(float textSize){
+        mSelectorTextPaint.setTextSize(textSize);
+    }
+
+    /**
      * 设置选择器背景
      * @param color
-     * @param alpha 透明度
      */
-    public void setSelectorBackgroundColor(int color,int alpha) {
+    public void setSelectorBackgroundColor(int color) {
         mSelectorBackgroundPaint.setColor(color);
-        mSelectorBackgroundPaint.setAlpha(alpha);
+    }
+
+    /**
+     * 设置曲线宽度
+     */
+    public void setLineWidth(float width)
+    {
+        ma20Paint.setStrokeWidth(width);
+        ma10Paint.setStrokeWidth(width);
+        ma5Paint.setStrokeWidth(width);
+    }
+
+    /**
+     * 设置文字大小
+     */
+    public void setTextSize(float textSize)
+    {
+        ma20Paint.setTextSize(textSize);
+        ma10Paint.setTextSize(textSize);
+        ma5Paint.setTextSize(textSize);
+    }
+
+    /**
+     * 蜡烛是否实心
+     */
+    public void setCandleSolid(boolean candleSolid) {
+        mCandleSolid = candleSolid;
     }
 }

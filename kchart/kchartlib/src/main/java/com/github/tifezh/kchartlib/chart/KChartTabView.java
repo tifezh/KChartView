@@ -3,6 +3,7 @@ package com.github.tifezh.kchartlib.chart;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.github.tifezh.kchartlib.R;
+import com.github.tifezh.kchartlib.chart.draw.TabView;
 import com.github.tifezh.kchartlib.utils.ViewUtil;
 
 
@@ -28,6 +30,8 @@ public class KChartTabView extends RelativeLayout implements View.OnClickListene
     private TabSelectListener mTabSelectListener = null;
     //当前选择的index
     private int mSelectedIndex = 0;
+    private ColorStateList mColorStateList;
+    private int mIndicatorColor;
 
     public KChartTabView(Context context) {
         super(context);
@@ -64,7 +68,11 @@ public class KChartTabView extends RelativeLayout implements View.OnClickListene
                 }
             }
         });
-
+        mTvFullScreen.setSelected(true);
+        if(mColorStateList!=null)
+        {
+            mTvFullScreen.setTextColor(mColorStateList);
+        }
     }
 
     @Override
@@ -98,14 +106,15 @@ public class KChartTabView extends RelativeLayout implements View.OnClickListene
      * @param text 选项卡文字
      */
     public void addTab(String text) {
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.item_tab, null);
-        TextView textView = (TextView) view.findViewById(R.id.tab_text);
-        textView.setText(text);
-        view.setOnClickListener(this);
-        mLlContainer.addView(view);
+        TabView tabView=new TabView(getContext());
+        tabView.setOnClickListener(this);
+        tabView.setText(text);
+        tabView.setTextColor(mColorStateList);
+        tabView.setIndicatorColor(mIndicatorColor);
+        mLlContainer.addView(tabView);
         //第一个默认选中
         if (mLlContainer.getChildCount() == 1) {
-            view.setSelected(true);
+            tabView.setSelected(true);
             mSelectedIndex = 0;
             onTabSelected(mSelectedIndex);
         }
@@ -127,6 +136,30 @@ public class KChartTabView extends RelativeLayout implements View.OnClickListene
     private void onTabSelected(int position) {
         if (mTabSelectListener != null) {
             mTabSelectListener.onTabSelected(position);
+        }
+    }
+
+    public void setTextColor(ColorStateList color)
+    {
+        mColorStateList=color;
+        for(int i=0;i<mLlContainer.getChildCount();i++)
+        {
+            TabView tabView= (TabView) mLlContainer.getChildAt(i);
+            tabView.setTextColor(mColorStateList);
+        }
+        if(mColorStateList!=null)
+        {
+            mTvFullScreen.setTextColor(mColorStateList);
+        }
+    }
+
+    public void setIndicatorColor(int color)
+    {
+        mIndicatorColor=color;
+        for(int i=0;i<mLlContainer.getChildCount();i++)
+        {
+            TabView tabView= (TabView) mLlContainer.getChildAt(i);
+            tabView.setIndicatorColor(mIndicatorColor);
         }
     }
 

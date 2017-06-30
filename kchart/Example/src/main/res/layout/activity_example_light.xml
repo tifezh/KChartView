@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
-        android:background="@color/chart_background">
+        android:background="#f4f4f4">
 
         <TextView
             android:layout_width="match_parent"
@@ -17,20 +17,20 @@
             android:minHeight="40dp"
             android:text="@string/app_name"
             android:gravity="center"
-            android:textColor="@color/chart_white"
+            android:textColor="#000"
             android:textSize="16sp" />
     </RelativeLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="#494949" />
+        android:background="#e6e6e6" />
 
     <LinearLayout
         android:id="@+id/ll_status"
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:background="#30343C"
+
         android:orientation="horizontal"
         android:paddingLeft="10dp"
         android:paddingRight="10dp">
@@ -74,14 +74,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="最高 xxx"
-                android:textColor="@color/chart_white"
+                android:textColor="#000"
                 android:textSize="12sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="最低 xxx"
-                android:textColor="@color/chart_white"
+                android:textColor="#000"
                 android:textSize="12sp"
                 android:layout_marginTop="13dp" />
 
@@ -98,14 +98,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="昨收 xxx"
-                android:textColor="@color/chart_white"
+                android:textColor="#000"
                 android:textSize="12sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="开盘 xxx"
-                android:textColor="@color/chart_white"
+                android:textColor="#000"
                 android:textSize="12sp"
                 android:layout_marginTop="13dp" />
 
@@ -115,12 +115,21 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="#494949" />
+        android:background="#e6e6e6" />
 
     <com.github.tifezh.kchartlib.chart.KChartView
         android:id="@+id/kchart_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        app:kc_text_size="@dimen/chart_text_size"
+        app:kc_background_color="#FFF"
+        app:kc_grid_line_color="#d0d0d0"
+        app:kc_grid_line_width="0.3dp"
+        app:kc_text_color="#787878"
+        app:kc_tab_text_color="@color/tab_light_text_color_selector"
+        app:kc_tab_indicator_color="#4473b1"
+        app:kc_tab_background_color="#fff"
+        app:kc_candle_solid="false">
     </com.github.tifezh.kchartlib.chart.KChartView>
 </LinearLayout>
