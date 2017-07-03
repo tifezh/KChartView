@@ -95,8 +95,6 @@ public abstract class BaseKChartView extends ScrollAndScaleView {
     };
     //当前点的个数
     private int mItemCount;
-    //每个点的x坐标
-    private List<Float> mXs = new ArrayList<>();
     private IChartDraw mChildDraw;
     private List<IChartDraw> mChildDraws = new ArrayList<>();
 
@@ -388,12 +386,7 @@ public abstract class BaseKChartView extends ScrollAndScaleView {
      */
     public void notifyChanged() {
         if (mItemCount != 0) {
-            mXs=new ArrayList<>(mItemCount);
             mDataLen = (mItemCount - 1) * mPointWidth;
-            for (int i = 0; i < mItemCount; i++) {
-                float x = i * mPointWidth;
-                mXs.add(x);
-            }
             checkAndFixScrollX();
             setTranslateXFromScrollX(mScrollX);
         } else {
@@ -544,7 +537,7 @@ public abstract class BaseKChartView extends ScrollAndScaleView {
      * @return
      */
     public float getX(int position) {
-        return mXs.get(position);
+        return position * mPointWidth;
     }
 
     /**

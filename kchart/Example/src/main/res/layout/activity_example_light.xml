@@ -125,7 +125,7 @@
         app:kc_text_size="@dimen/chart_text_size"
         app:kc_background_color="#FFF"
         app:kc_grid_line_color="#d0d0d0"
-        app:kc_grid_line_width="0.3dp"
+        app:kc_grid_line_width="0.5dp"
         app:kc_text_color="#787878"
         app:kc_tab_text_color="@color/tab_light_text_color_selector"
         app:kc_tab_indicator_color="#4473b1"

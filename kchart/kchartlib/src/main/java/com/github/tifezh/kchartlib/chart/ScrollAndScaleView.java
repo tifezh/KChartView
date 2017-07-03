@@ -91,7 +91,7 @@ public abstract class ScrollAndScaleView extends RelativeLayout implements
 
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        if (!isTouch()) {
+        if (!isTouch()&&isScrollEnable()) {
             mScroller.fling(mScrollX, 0
                     , Math.round(velocityX / mScaleX), 0,
                     Integer.MIN_VALUE, Integer.MAX_VALUE,
@@ -120,11 +120,20 @@ public abstract class ScrollAndScaleView extends RelativeLayout implements
     public void scrollTo(int x, int y) {
         if(!isScrollEnable())
         {
+            mScroller.forceFinished(true);
             return;
         }
         int oldX = mScrollX;
         mScrollX = x;
-        checkAndFixScrollX();
+        if (mScrollX < getMinScrollX()) {
+            mScrollX = getMinScrollX();
+            onRightSide();
+            mScroller.forceFinished(true);
+        } else if (mScrollX > getMaxScrollX()) {
+            mScrollX = getMaxScrollX();
+            onLeftSide();
+            mScroller.forceFinished(true);
+        }
         onScrollChanged(mScrollX, 0, oldX, 0);
         invalidate();
     }
@@ -251,11 +260,9 @@ public abstract class ScrollAndScaleView extends RelativeLayout implements
     protected void checkAndFixScrollX() {
         if (mScrollX < getMinScrollX()) {
             mScrollX = getMinScrollX();
-            onRightSide();
             mScroller.forceFinished(true);
         } else if (mScrollX > getMaxScrollX()) {
             mScrollX = getMaxScrollX();
-            onLeftSide();
             mScroller.forceFinished(true);
         }
     }

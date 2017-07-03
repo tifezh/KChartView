@@ -3,10 +3,12 @@ package com.github.tifezh.kchartlib.chart;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.graphics.Canvas;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -28,6 +30,7 @@ public class KChartView extends BaseKChartView {
     private boolean isLoadMoreEnd=false;
     private boolean mLastScrollEnable;
     private boolean mLastScaleEnable;
+
     private KChartRefreshListener mRefreshListener;
 
     private MACDDraw mMACDDraw;
@@ -53,7 +56,7 @@ public class KChartView extends BaseKChartView {
 
     private void initView() {
         mProgressBar=new ProgressBar(getContext());
-        LayoutParams layoutParams = new LayoutParams(dp2px(75), dp2px(75));
+        LayoutParams layoutParams = new LayoutParams(dp2px(50), dp2px(50));
         layoutParams.addRule(CENTER_IN_PARENT);
         addView(mProgressBar,layoutParams);
         mProgressBar.setVisibility(GONE);
@@ -403,5 +406,12 @@ public class KChartView extends BaseKChartView {
     public void setTextColor(int color) {
         super.setTextColor(color);
         mMainDraw.setSelectorTextColor(color);
+    }
+
+    /**
+     * 设置刷新监听
+     */
+    public void setRefreshListener(KChartRefreshListener refreshListener) {
+        mRefreshListener = refreshListener;
     }
 }

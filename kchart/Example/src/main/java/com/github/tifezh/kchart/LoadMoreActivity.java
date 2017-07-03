@@ -1,13 +1,10 @@
 package com.github.tifezh.kchart;
 
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -22,8 +19,11 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class ExampleActivity extends AppCompatActivity {
+/**
+ * Created by tifezh on 2017/7/3.
+ */
 
+public class LoadMoreActivity extends AppCompatActivity implements KChartView.KChartRefreshListener{
     @Bind(R.id.ll_status)
     LinearLayout mLlStatus;
     @Bind(R.id.kchart_view)
@@ -35,20 +35,7 @@ public class ExampleActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        int type=getIntent().getIntExtra("type",0);
-        if(type==0)
-        {
-            setContentView(R.layout.activity_example);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                Window window = getWindow();
-                window.setFlags(
-                        WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
-                        WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            }
-        }
-        else {
-            setContentView(R.layout.activity_example_light);
-        }
+        setContentView(R.layout.activity_example_light);
         ButterKnife.bind(this);
         initView();
         initData();
@@ -71,20 +58,8 @@ public class ExampleActivity extends AppCompatActivity {
 
     private void initData() {
         mKChartView.showLoading();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                final List<KLineEntity> data = DataRequest.getALL(ExampleActivity.this);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAdapter.addFooterData(data);
-                        mKChartView.startAnimation();
-                        mKChartView.refreshEnd();
-                    }
-                });
-            }
-        }).start();
+        mKChartView.setRefreshListener(this);
+        onLoadMoreBegin(mKChartView);
     }
 
     @Override
@@ -99,5 +74,43 @@ public class ExampleActivity extends AppCompatActivity {
             mKChartView.setGridRows(4);
             mKChartView.setGridColumns(4);
         }
+    }
+
+    @Override
+    public void onLoadMoreBegin(KChartView chart) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final List<KLineEntity> data = DataRequest.getData(LoadMoreActivity.this,mAdapter.getCount(),500);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if(!data.isEmpty()) {
+                    Log.i("onLoadMoreBegin", "start:" + data.get(0).getDatetime() + " stop:" + data.get(data.size() - 1).getDatetime());
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //第一次加载时开始动画
+                        if(mAdapter.getCount()==0)
+                        {
+                            mKChartView.startAnimation();
+                        }
+                        mAdapter.addFooterData(data);
+                        //加载完成，还有更多数据
+                        if(data.size()>0)
+                        {
+                            mKChartView.refreshComplete();
+                        }
+                        //加载完成，没有更多数据
+                        else {
+                            mKChartView.refreshEnd();
+                        }
+                    }
+                });
+            }
+        }).start();
     }
 }
