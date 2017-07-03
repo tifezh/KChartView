@@ -15,7 +15,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.github.tifezh.kchartlib.R;
-import com.github.tifezh.kchartlib.chart.draw.TabView;
 import com.github.tifezh.kchartlib.utils.ViewUtil;
 
 

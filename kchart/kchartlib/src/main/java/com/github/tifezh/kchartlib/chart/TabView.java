@@ -1,4 +1,4 @@
-package com.github.tifezh.kchartlib.chart.draw;
+package com.github.tifezh.kchartlib.chart;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
