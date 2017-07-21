@@ -24,6 +24,10 @@
                   android:configChanges="keyboardHidden|orientation|screenSize"
                   android:screenOrientation="portrait">
         </activity>
+        <activity android:name=".MinuteChartActivity"
+                  android:configChanges="keyboardHidden|orientation|screenSize"
+                  android:screenOrientation="portrait">
+        </activity>
     </application>
 
 </manifest>

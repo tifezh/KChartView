@@ -29,4 +29,12 @@
         android:layout_marginTop="20dp"
         android:onClick="onClick"
         android:text="加载更多"/>
+
+    <Button
+        android:id="@+id/btn_minute"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:onClick="onClick"
+        android:text="分时图"/>
 </LinearLayout>

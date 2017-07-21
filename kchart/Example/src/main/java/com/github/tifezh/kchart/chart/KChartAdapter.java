@@ -47,8 +47,6 @@ public class KChartAdapter extends BaseKChartAdapter {
 
     /**
      * 向头部添加数据
-     *
-     * @param data
      */
     public void addHeaderData(List<KLineEntity> data) {
         if (data != null && !data.isEmpty()) {
@@ -59,14 +57,22 @@ public class KChartAdapter extends BaseKChartAdapter {
 
     /**
      * 向尾部添加数据
-     *
-     * @param data
      */
     public void addFooterData(List<KLineEntity> data) {
         if (data != null && !data.isEmpty()) {
             datas.addAll(0, data);
             notifyDataSetChanged();
         }
+    }
+
+    /**
+     * 改变某个点的值
+     * @param position 索引值
+     */
+    public void changeItem(int position,KLineEntity data)
+    {
+        datas.set(position,data);
+        notifyDataSetChanged();
     }
 
 }
