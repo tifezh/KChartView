@@ -51,12 +51,23 @@ public class KChartView extends BaseKChart {
 
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
-        Activity activity = (Activity) getContext();
-        boolean isVertical = (getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT);
-        if (isVertical) {
-            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        if (e.getY() <= mMainHeight) {
+            Activity activity = (Activity) getContext();
+            boolean isVertical = (getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT);
+            if (isVertical) {
+                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            } else {
+                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+            }
         } else {
-            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+            mKChartTabView.mLlContainer.getChildAt(mKChartTabView.mSelectedIndex).setSelected(false);
+            if (mKChartTabView.mSelectedIndex < mKChartTabView.mLlContainer.getChildCount() - 1) {
+                mKChartTabView.mSelectedIndex++;
+            } else {
+                mKChartTabView.mSelectedIndex = 0;
+            }
+            setChildDraw(mKChartTabView.mSelectedIndex);
+            mKChartTabView.mLlContainer.getChildAt(mKChartTabView.mSelectedIndex).setSelected(true);
         }
         return true;
     }

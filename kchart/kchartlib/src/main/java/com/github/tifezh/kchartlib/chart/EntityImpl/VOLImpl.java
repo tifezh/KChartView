@@ -14,6 +14,6 @@ public interface VOLImpl {
 
     public float getCloseDif();
 
-    public boolean getRate();
+    public float getRate();
 
 }

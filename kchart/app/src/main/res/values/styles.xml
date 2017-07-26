@@ -8,4 +8,18 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="menu_item_text_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/popupwindow_menu_item_height</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/menu_item_text_color</item>
+        <item name="android:background">@drawable/menu_item_selector</item>
+    </style>
+
+    <style name="menu_item_divider_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/popupwindow_menu_item_divider_height</item>
+        <item name="android:background">@color/menu_item_divider_color</item>
+    </style>
+
 </resources>

@@ -21,6 +21,7 @@ import org.apache.http.util.EncodingUtils;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -60,7 +61,7 @@ public class FragmentK extends Fragment {
             @Override
             public void onSelectedChanged(IKChartView view, Object point, int index) {
                 KLineEntity data = (KLineEntity) point;
-                Log.i("onSelectedChanged", "index:" + index + " closePrice:" + data.getClosePrice());
+                Log.i("onSelectedChanged", "index:" + index + " closePrice:" + data.getClosePrice() + " chg:" + String.format(Locale.getDefault(), "%.2f", data.getRate() / data.getLastClosePrice()));
             }
         });
         mKChartView.setOverScrollRange(ViewUtil.dp2Px(getActivity(), 0));
@@ -70,7 +71,8 @@ public class FragmentK extends Fragment {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String fileName = "ibm.json"; //k线图的数据
+//                String fileName = "ibm.json"; //k线图的数据
+                String fileName = "ibm-short.json"; //k线图的数据
                 String res = "";
                 try {
                     InputStream in = getResources().getAssets().open(fileName);
@@ -81,9 +83,7 @@ public class FragmentK extends Fragment {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                final List<KLineEntity> data = new Gson().fromJson(res, new TypeToken<List<KLineEntity>>() {
-                }.getType());
-                DataHelper.calculate(data);
+                final List<KLineEntity> data = new Gson().fromJson(res, new TypeToken<List<KLineEntity>>() {}.getType());
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

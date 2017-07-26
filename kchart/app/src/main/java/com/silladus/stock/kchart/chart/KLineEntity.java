@@ -187,7 +187,7 @@ public class KLineEntity implements KLineImpl {
     }
 
     @Override
-    public boolean getRate() {
-        return Close - lastClosePrice >= 0;
+    public float getRate() {
+        return Close - lastClosePrice;
     }
 }

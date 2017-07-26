@@ -22,11 +22,11 @@ import com.github.tifezh.kchartlib.utils.ViewUtil;
  * Created by tifezh on 2016/5/17.
  */
 public class KChartTabView extends RelativeLayout implements View.OnClickListener {
-    LinearLayout mLlContainer;
+    public LinearLayout mLlContainer;
     TextView mTvFullScreen;
     private TabSelectListener mTabSelectListener = null;
     //当前选择的index
-    private int mSelectedIndex = 0;
+    public int mSelectedIndex = 0;
 
     public KChartTabView(Context context) {
         super(context);

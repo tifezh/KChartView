@@ -46,6 +46,9 @@ public class FragmentMT extends Fragment {
         ButterKnife.bind(this, layout);
         initView();
         initData();
+        String s = "";
+        String[] ss = s.split(",");
+        Log.e("onCreateView: ", "" + ss.length);
         return layout;
     }
 
@@ -89,8 +92,7 @@ public class FragmentMT extends Fragment {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                final List<MinLineEntity> data = new Gson().fromJson(res, new TypeToken<List<MinLineEntity>>() {
-                }.getType());
+                final List<MinLineEntity> data = new Gson().fromJson(res, new TypeToken<List<MinLineEntity>>() {}.getType());
                 setTrendMin(data);
 
                 final List<String[]> buys = new ArrayList<String[]>();
@@ -126,7 +128,6 @@ public class FragmentMT extends Fragment {
                     }
                     cachePrice++;
                 }
-                DataHelper.calculate(datas);
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -144,6 +145,7 @@ public class FragmentMT extends Fragment {
     private List<KLineEntity> datas = new ArrayList<>();
 
     private void setTrendMin(List<MinLineEntity> data) {
+        datas.clear();
         for (int i = 0; i < data.size(); i++) {
             KLineEntity min = new KLineEntity();
             min.isMinDraw = true;

@@ -17,7 +17,7 @@ public class DataHelper {
      *
      * @param datas
      */
-    static void calculateRSI(List<KLineEntity> datas) {
+    private static void calculateRSI(List<KLineEntity> datas) {
         float rsi1 = 0;
         float rsi2 = 0;
         float rsi3 = 0;
@@ -67,7 +67,7 @@ public class DataHelper {
      *
      * @param datas
      */
-    static void calculateKDJ(List<KLineEntity> datas) {
+    private static void calculateKDJ(List<KLineEntity> datas) {
         float k = 0;
         float d = 0;
 
@@ -105,7 +105,7 @@ public class DataHelper {
      *
      * @param datas
      */
-    static void calculateMACD(List<KLineEntity> datas) {
+    private static void calculateMACD(List<KLineEntity> datas) {
         float ema12 = 0;
         float ema26 = 0;
         float dif = 0;
@@ -142,7 +142,7 @@ public class DataHelper {
      *
      * @param datas
      */
-    static void calculateVOL(List<KLineEntity> datas) {
+    private static void calculateVOL(List<KLineEntity> datas) {
         float ma5 = 0;
         float ma10 = 0;
 
@@ -172,7 +172,7 @@ public class DataHelper {
      *
      * @param datas
      */
-    static void calculateBOLL(List<KLineEntity> datas) {
+    private static void calculateBOLL(List<KLineEntity> datas) {
         for (int i = 0; i < datas.size(); i++) {
             KLineEntity point = datas.get(i);
             final float closePrice = point.getClosePrice();
@@ -207,7 +207,7 @@ public class DataHelper {
      *
      * @param datas
      */
-    static void calculateMA(List<KLineEntity> datas) {
+    private static void calculateMA(List<KLineEntity> datas) {
         float ma5 = 0;
         float ma10 = 0;
         float ma20 = 0;
@@ -245,12 +245,23 @@ public class DataHelper {
      *
      * @param datas
      */
-    static void calculate(List<KLineEntity> datas) {
+    public static void calculate(List<KLineEntity> datas) {
         calculateMA(datas);
+//        jcalculateVOL(datas);
         calculateVOL(datas);
         calculateMACD(datas);
         calculateBOLL(datas);
         calculateRSI(datas);
         calculateKDJ(datas);
     }
+
+    static {
+        System.loadLibrary("native-lib");
+    }
+
+    /**
+     * 尚需处理数据量过大时的内存泄漏问题
+     * @param datas
+     */
+    private static native void jcalculateVOL(List<KLineEntity> datas);
 }

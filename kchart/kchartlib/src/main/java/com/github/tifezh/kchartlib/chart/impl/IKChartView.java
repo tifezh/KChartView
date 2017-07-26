@@ -162,5 +162,10 @@ public interface IKChartView {
          * @param index 选中点的索引
          */
         void onSelectedChanged(IKChartView view, Object point, int index);
+
+//        /**
+//         * 取消选中时
+//         */
+//        void onSelectedComplect();
     }
 }

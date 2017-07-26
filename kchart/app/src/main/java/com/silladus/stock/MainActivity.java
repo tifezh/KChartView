@@ -4,17 +4,18 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Gravity;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
-import android.widget.PopupMenu;
+import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -64,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
                 btn5Day.setBackgroundColor(0x00000000);
                 btnWeek.setBackgroundColor(0x00000000);
                 btnMonth.setBackgroundColor(0x00000000);
+                btnMins.setText("分钟v");
+                btnMins.setBackgroundColor(0x00000000);
                 break;
             case R.id.btn_5day:
                 showFragment(1);
@@ -72,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
                 btn5Day.setBackgroundColor(Color.WHITE);
                 btnWeek.setBackgroundColor(0x00000000);
                 btnMonth.setBackgroundColor(0x00000000);
+                btnMins.setText("分钟v");
+                btnMins.setBackgroundColor(0x00000000);
                 break;
             case R.id.btn_day:
                 showFragment(2);
@@ -80,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
                 btn5Day.setBackgroundColor(0x00000000);
                 btnWeek.setBackgroundColor(0x00000000);
                 btnMonth.setBackgroundColor(0x00000000);
+                btnMins.setText("分钟v");
+                btnMins.setBackgroundColor(0x00000000);
                 break;
             case R.id.btn_week:
                 btnMin.setBackgroundColor(0x00000000);
@@ -87,6 +94,8 @@ public class MainActivity extends AppCompatActivity {
                 btn5Day.setBackgroundColor(0x00000000);
                 btnWeek.setBackgroundColor(Color.WHITE);
                 btnMonth.setBackgroundColor(0x00000000);
+                btnMins.setText("分钟v");
+                btnMins.setBackgroundColor(0x00000000);
                 break;
             case R.id.btn_month:
                 btnMin.setBackgroundColor(0x00000000);
@@ -94,9 +103,11 @@ public class MainActivity extends AppCompatActivity {
                 btn5Day.setBackgroundColor(0x00000000);
                 btnWeek.setBackgroundColor(0x00000000);
                 btnMonth.setBackgroundColor(Color.WHITE);
+                btnMins.setText("分钟v");
+                btnMins.setBackgroundColor(0x00000000);
                 break;
             case R.id.btn_mins:
-                showMinMenu();
+                showMinMenu(view);
 //                btnMin.setBackgroundColor(0x00000000);
 //                btnDay.setBackgroundColor(0x00000000);
 //                btn5Day.setBackgroundColor(0x00000000);
@@ -133,34 +144,114 @@ public class MainActivity extends AppCompatActivity {
         return tv;
     }
 
-    private PopupMenu menu;
-
-    private void showMinMenu() {
-        if (menu == null) {
-            menu = new PopupMenu(this, btnMins);
-            menu.inflate(R.menu.stock_tab_menu);
-            menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    switch (item.getItemId()) {
-                        case R.id.item_60min:
-                            Log.e("onMenuItemClick: ", "--------60min-------");
-                            return true;
-                        case R.id.item_30min:
-                            Log.e("onMenuItemClick: ", "--------30min-------");
-                            return true;
-                        case R.id.item_15min:
-                            Log.e("onMenuItemClick: ", "--------15min-------");
-                            return true;
-                        case R.id.item_5min:
-                            Log.e("onMenuItemClick: ", "--------5min-------");
-                            return true;
-                    }
-                    return false;
-                }
-            });
+    private int[] calculatePopWindowPos(final View anchorView, final View contentView) {
+        final int windowPos[] = new int[2];
+        final int anchorLoc[] = new int[2];
+        // 获取锚点View在屏幕上的左上角坐标位置
+        anchorView.getLocationOnScreen(anchorLoc);
+        final int anchorHeight = anchorView.getHeight();
+        // 获取屏幕的高宽
+        final int screenHeight = getResources().getDisplayMetrics().heightPixels;
+        final int screenWidth = getResources().getDisplayMetrics().widthPixels;
+        // 测量contentView
+        contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        // 计算contentView的高宽
+        final int windowHeight = contentView.getMeasuredHeight();
+        final int windowWidth = contentView.getMeasuredWidth();
+        // 判断需要向上弹出还是向下弹出显示
+        final boolean isNeedShowUp = screenHeight - anchorLoc[1] - anchorHeight < windowHeight;
+        if (isNeedShowUp) {
+            windowPos[0] = screenWidth - windowWidth;
+            windowPos[1] = anchorLoc[1] - windowHeight;
+        } else {
+            windowPos[0] = screenWidth - windowWidth;
+            windowPos[1] = anchorLoc[1] + anchorHeight;
         }
-        menu.show();
+        return windowPos;
+    }
+
+    private View getPopupWindowContentView() {
+        // 一个自定义的布局，作为显示的内容
+        int layoutId = R.layout.popup_menu_layout;   // 布局ID
+        View contentView = LayoutInflater.from(this).inflate(layoutId, null);
+        View.OnClickListener menuItemOnClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(v.getContext(), "Click " + ((TextView) v).getText(), Toast.LENGTH_SHORT).show();
+                btnMins.setBackgroundColor(Color.WHITE);
+                switch (v.getId()) {
+                    case R.id.menu_60min:
+                        btnMin.setBackgroundColor(0x00000000);
+                        btnDay.setBackgroundColor(0x00000000);
+                        btn5Day.setBackgroundColor(0x00000000);
+                        btnWeek.setBackgroundColor(0x00000000);
+                        btnMonth.setBackgroundColor(0x00000000);
+                        btnMins.setText(60 + "分v");
+                        break;
+                    case R.id.menu_30min:
+                        btnMin.setBackgroundColor(0x00000000);
+                        btnDay.setBackgroundColor(0x00000000);
+                        btn5Day.setBackgroundColor(0x00000000);
+                        btnWeek.setBackgroundColor(0x00000000);
+                        btnMonth.setBackgroundColor(0x00000000);
+                        btnMins.setText(30 + "分v");
+                        break;
+                    case R.id.menu_15min:
+                        btnMin.setBackgroundColor(0x00000000);
+                        btnDay.setBackgroundColor(0x00000000);
+                        btn5Day.setBackgroundColor(0x00000000);
+                        btnWeek.setBackgroundColor(0x00000000);
+                        btnMonth.setBackgroundColor(0x00000000);
+                        btnMins.setText(15 + "分v");
+                        break;
+                    case R.id.menu_5min:
+                        btnMin.setBackgroundColor(0x00000000);
+                        btnDay.setBackgroundColor(0x00000000);
+                        btn5Day.setBackgroundColor(0x00000000);
+                        btnWeek.setBackgroundColor(0x00000000);
+                        btnMonth.setBackgroundColor(0x00000000);
+                        btnMins.setText(5 + "分v");
+                        break;
+                }
+                if (mPopupWindow != null) {
+                    mPopupWindow.dismiss();
+                }
+            }
+        };
+        contentView.findViewById(R.id.menu_60min).setOnClickListener(menuItemOnClickListener);
+        contentView.findViewById(R.id.menu_30min).setOnClickListener(menuItemOnClickListener);
+        contentView.findViewById(R.id.menu_15min).setOnClickListener(menuItemOnClickListener);
+        contentView.findViewById(R.id.menu_5min).setOnClickListener(menuItemOnClickListener);
+        return contentView;
+    }
+
+    private PopupWindow mPopupWindow;
+    private int[] windowPos;
+
+    private void showMinMenu(View anchorView) {
+        if (mPopupWindow == null) {
+            View contentView = getPopupWindowContentView();
+            mPopupWindow = new PopupWindow(contentView, getResources().getDisplayMetrics().widthPixels / 6, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+            // 如果不设置PopupWindow的背景，有些版本就会出现一个问题：无论是点击外部区域还是Back键都无法dismiss弹框
+            mPopupWindow.setBackgroundDrawable(new ColorDrawable());
+            // 设置好参数之后再show
+            windowPos = calculatePopWindowPos(anchorView, contentView);
+
+//            WindowManager.LayoutParams params = getWindow().getAttributes();//创建当前界面的一个参数对象
+//            params.alpha = 0.8f;
+//            getWindow().setAttributes(params);//把该参数对象设置进当前界面中
+//            popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+//                @Override
+//                public void onDismiss() {
+//                    WindowManager.LayoutParams params = getWindow().getAttributes();
+//                    params.alpha = 1.0f;//设置为不透明，即恢复原来的界面
+//                    getWindow().setAttributes(params);
+//                }
+//            });
+        }
+//        int xOff = 20; // 可以自己调整偏移
+//        windowPos[0] -= xOff;
+        mPopupWindow.showAtLocation(anchorView, Gravity.TOP | Gravity.START, windowPos[0], windowPos[1]);
     }
 
     private void showFragment(int index) {

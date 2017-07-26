@@ -1,6 +1,7 @@
 package com.silladus.stock.kchart.chart;
 
 import com.github.tifezh.kchartlib.chart.BaseKChartAdapter;
+import com.silladus.stock.DataHelper;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -50,14 +51,8 @@ public class MChartAdapter extends BaseKChartAdapter {
      */
     public void addHeaderData(List<KLineEntity> data) {
         if (data != null && !data.isEmpty()) {
-//            for (int i = 0; i < data.size(); i++) {
-//                datas.set(i, data.get(i));
-//            }
             datas.addAll(data);
-//            int ss = datas.size();
-//            for (int i = 0; i < 240 - ss; i++){
-//                datas.add(new KLineEntity());
-//            }
+            DataHelper.calculate(datas);
             notifyDataSetChanged();
         }
     }
@@ -69,15 +64,8 @@ public class MChartAdapter extends BaseKChartAdapter {
      */
     public void addFooterData(List<KLineEntity> data) {
         if (data != null && !data.isEmpty()) {
-//            for (int i = 0; i < data.size(); i++) {
-//                datas.set(i, data.get(i));
-//            }
             datas.addAll(data);
-
-//            int ss = datas.size();
-//            for (int i = 0; i < 240 - ss; i++){
-//                datas.add(new KLineEntity());
-//            }
+            DataHelper.calculate(datas);
             notifyDataSetChanged();
         }
     }

@@ -76,15 +76,12 @@ public class VOLDraw extends BaseDraw<VOLImpl> {
     private void drawVOL(Canvas canvas, IKChartView view, float lastX, float cutX, VOLImpl curPoint) {
         float closeDif = curPoint.getCloseDif();
         float vol = view.getChildY(curPoint.getVOL());
-        float eX = cutX - lastX;
-//        int r = eX < 2 ? 1 : (int) (eX / 2);
-        float r = eX / 2;
         if (isMainChart) {
-            r = mCandleWidth / 2;
+            float r = mCandleWidth / 2;
             if (closeDif < 0) {
                 canvas.drawRect(cutX - r, vol, cutX + r, view.getChildY(0), greenPaint);
             } else if (closeDif == 0) {
-                if (curPoint.getRate()) {
+                if (curPoint.getRate() >= 0) {
                     canvas.drawRect(cutX - r, vol, cutX + r, view.getChildY(0), redPaint);
                 } else {
                     canvas.drawRect(cutX - r, vol, cutX + r, view.getChildY(0), greenPaint);
@@ -93,6 +90,8 @@ public class VOLDraw extends BaseDraw<VOLImpl> {
                 canvas.drawRect(cutX - r, vol, cutX + r, view.getChildY(0), redPaint);
             }
         } else {
+            float eX = lastX == 0 ? 2 * cutX : cutX - lastX;
+            float r = eX / 3;
             if (closeDif < 0) {
                 canvas.drawRect(cutX - r, vol, cutX + r, view.getChildY(0), greenPaint);
             } else if (closeDif == 0) {

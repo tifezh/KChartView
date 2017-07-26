@@ -1,6 +1,7 @@
 package com.silladus.stock.kchart.chart;
 
 import com.github.tifezh.kchartlib.chart.BaseKChartAdapter;
+import com.silladus.stock.DataHelper;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -65,6 +66,7 @@ public class KChartAdapter extends BaseKChartAdapter {
     public void addFooterData(List<KLineEntity> data) {
         if (data != null && !data.isEmpty()) {
             datas.addAll(0, data);
+            DataHelper.calculate(datas);
             notifyDataSetChanged();
         }
     }

@@ -12,61 +12,61 @@ public interface MINImpl {
      *
      * @return
      */
-    public float getLastPrice();
+    float getLastPrice();
 
     /**
      * 昨日收盘价
      *
      * @return
      */
-    public float getLastClosePrice();
+    float getLastClosePrice();
 
     /**
      * 开盘价
      *
      * @return
      */
-    public float getOpenPrice();
+    float getOpenPrice();
 
     /**
      * 最高价
      *
      * @return
      */
-    public float getHighPrice();
+    float getHighPrice();
 
     /**
      * 最低价
      *
      * @return
      */
-    public float getLowPrice();
+    float getLowPrice();
 
     /**
      * 收盘价
      *
      * @return
      */
-    public float getClosePrice();
+    float getClosePrice();
 
     /**
      * 成交量
      *
      * @return
      */
-    public float getVolume();
+    float getVolume();
 
     /**
      * 成交均价
      *
      * @return
      */
-    public float getAVPrice();
+    float getAVPrice();
 
     /**
      * 成交时间
      *
      * @return
      */
-    public String getTime();
+    String getTime();
 }

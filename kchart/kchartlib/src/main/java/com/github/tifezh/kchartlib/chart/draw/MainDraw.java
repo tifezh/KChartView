@@ -10,7 +10,6 @@ import android.support.annotation.Nullable;
 import com.github.tifezh.kchartlib.R;
 import com.github.tifezh.kchartlib.chart.EntityImpl.CandleImpl;
 import com.github.tifezh.kchartlib.chart.EntityImpl.KLineImpl;
-import com.github.tifezh.kchartlib.chart.formatter.ValueFormatter;
 import com.github.tifezh.kchartlib.chart.impl.IKChartView;
 import com.github.tifezh.kchartlib.utils.ViewUtil;
 
@@ -25,7 +24,6 @@ import java.util.List;
 public class MainDraw extends BaseDraw<CandleImpl> {
     private Paint mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mSelectorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private ValueFormatter df = new ValueFormatter();
 
     /**
      * 构造方法
@@ -142,10 +140,10 @@ public class MainDraw extends BaseDraw<CandleImpl> {
         CandleImpl point = (CandleImpl) view.getItem(index);
         List<String> strings = new ArrayList<>();
         strings.add(view.formatDateTime(view.getAdapter().getDate(index)));
-        strings.add("高:" + df.format(point.getHighPrice()));
-        strings.add("低:" + df.format(point.getLowPrice()));
-        strings.add("开:" + df.format(point.getOpenPrice()));
-        strings.add("收:" + df.format(point.getClosePrice()));
+        strings.add("高:" + view.formatValue(point.getHighPrice()));
+        strings.add("低:" + view.formatValue(point.getLowPrice()));
+        strings.add("开:" + view.formatValue(point.getOpenPrice()));
+        strings.add("收:" + view.formatValue(point.getClosePrice()));
 
         for (String s : strings) {
             width = Math.max(width, mTextPaint.measureText(s));
@@ -167,6 +165,6 @@ public class MainDraw extends BaseDraw<CandleImpl> {
             canvas.drawText(s, left + padding, y, mTextPaint);
             y += textHeight + padding;
         }
-
     }
+
 }

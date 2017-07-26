@@ -3,4 +3,9 @@
     <color name="colorPrimary">#e94142</color>
     <color name="colorPrimaryDark">#e94142</color>
     <color name="colorAccent">#e94142</color>
+    <color name="colorbg">#90ffffff</color>
+    <color name="menu_item_normal_bg">#FFFFFFFF</color>
+    <color name="menu_item_press_bg">#d6d2d3</color>
+    <color name="menu_item_divider_color">#d6d2d3</color>
+    <color name="menu_item_text_color">#FF8F8F8F</color>
 </resources>

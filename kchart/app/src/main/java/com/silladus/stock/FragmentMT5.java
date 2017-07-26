@@ -119,7 +119,6 @@ public class FragmentMT5 extends Fragment {
                     }
                     cachePrice++;
                 }
-                DataHelper.calculate(datas);
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
