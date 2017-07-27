@@ -71,53 +71,22 @@ public class FragmentMT5 extends Fragment {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String fileName = "min.json"; //分时图数据
-                String res = "";
-                try {
-                    InputStream in = getResources().getAssets().open(fileName);
-                    int length = in.available();
-                    byte[] buffer = new byte[length];
-                    in.read(buffer);
-                    res = EncodingUtils.getString(buffer, "UTF-8");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                final List<MinLineEntity> data = new Gson().fromJson(res, new TypeToken<List<MinLineEntity>>() {
-                }.getType());
-                setTrendMin(data);
-
-                final List<String[]> buys = new ArrayList<String[]>();
-                final List<String[]> sells = new ArrayList<String[]>();
                 for (int i = 0; i < 5; i++) {
-                    buys.add(new String[]{"10.55", "1000"});
-                }
-                int cachePrice = 352;
-                Random random = new Random();
-                for (int i = 0; i < 10; i++) {
-                    String[] ss = {"10.55", "1000"};
-                    ss[0] = String.format("%.2f", cachePrice / 100f);
-                    int oV = 1 | random.nextInt(100000);
-                    if (oV >= 10000) {
-                        float value1 = oV / 10000f;
-                        ss[1] = String.format("%.2f", value1) + "万";
-                    } else {
-                        ss[1] = String.valueOf(oV);
+                    String fileName = "min5_sz000835_" + i + ".json"; //分时图数据
+                    String res = "";
+                    try {
+                        InputStream in = getResources().getAssets().open(fileName);
+                        int length = in.available();
+                        byte[] buffer = new byte[length];
+                        in.read(buffer);
+                        res = EncodingUtils.getString(buffer, "UTF-8");
+                        in.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                    if (i < 5) {
-                        if (i == 4) {
-                            ss[1] = "1.53万";
-                        }
-                        if (i == 3) {
-                            ss[1] = "61.37万";
-                        }
-                        buys.set(4 - i, ss);
-                    } else {
-                        if (i == 5) {
-                            ss[1] = "60";
-                        }
-                        sells.add(ss);
-                    }
-                    cachePrice++;
+                    final List<MinLineEntity> data = new Gson().fromJson(res, new TypeToken<List<MinLineEntity>>() {
+                    }.getType());
+                    setTrendMin(data);
                 }
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
@@ -140,11 +109,11 @@ public class FragmentMT5 extends Fragment {
             min.Close = (float) data.get(i).price;
             min.avPrice = (float) data.get(i).avg;
             min.lastPrice = (float) (i > 0 ? data.get(i - 1).price : 3.54f);
-            min.lastClosePrice = 3.54f;
+            min.lastClosePrice = 9.70f;
             min.Volume = data.get(i).vol * 100;
             min.Date = data.get(i).time;
-            min.High = 3.57f;
-            min.Low = 3.52f;
+            min.High = 10.44f;
+            min.Low = 9.59f;
             datas.add(min);
         }
     }

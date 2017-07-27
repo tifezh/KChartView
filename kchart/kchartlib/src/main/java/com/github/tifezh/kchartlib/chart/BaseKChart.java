@@ -527,6 +527,8 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
                 } else {
                     text = "";
                 }
+            } else if (mMainDraw instanceof MIN5Draw) {
+                text = (i + 1) + "";
             } else {
                 float translateX = xToTranslateX(columnSpace * i);
                 if (translateX >= startX && translateX <= stopX) {
@@ -536,7 +538,11 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
                     text = "";
                 }
             }
-            canvas.drawText(text, columnSpace * i - mTextPaint.measureText(text) / 2, y, mTextPaint);
+            if (mMainDraw instanceof MIN5Draw) {
+                canvas.drawText(text, columnSpace / 2f + columnSpace * i - mTextPaint.measureText(text) / 2, y, mTextPaint);
+            } else {
+                canvas.drawText(text, columnSpace * i - mTextPaint.measureText(text) / 2, y, mTextPaint);
+            }
         }
         if (mMainDraw instanceof MainDraw) {
             float translateX = xToTranslateX(0);
@@ -548,6 +554,8 @@ public abstract class BaseKChart extends ScrollAndScaleView implements
                 text = formatDateTime(getAdapter().getDate(mStopIndex));
                 canvas.drawText(text, mWidth - mTextPaint.measureText(text), y, mTextPaint);
             }
+        } else if (mMainDraw instanceof MIN5Draw) {
+            canvas.drawText("1", columnSpace / 2 - mTextPaint.measureText(text) / 2, y, mTextPaint);
         } else {
             canvas.drawText(timeOfMinLine[0], 0, y, mTextPaint);
             canvas.drawText(timeOfMinLine[4], mWidth - mTextPaint.measureText(timeOfMinLine[4]), y, mTextPaint);

@@ -14,6 +14,11 @@ KChart for Android ；股票k线图
 
 ![image](https://github.com/silladus/KChartView/blob/master/kchart/img/min.png)
 
+  五日
+---------
+
+![image](https://github.com/silladus/KChartView/blob/master/kchart/img/min5.png)
+
   K线
 ---------
 
