@@ -3,12 +3,10 @@ package com.github.tifezh.kchartlib.chart;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
-import android.graphics.Canvas;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -18,6 +16,7 @@ import com.github.tifezh.kchartlib.chart.draw.KDJDraw;
 import com.github.tifezh.kchartlib.chart.draw.MACDDraw;
 import com.github.tifezh.kchartlib.chart.draw.MainDraw;
 import com.github.tifezh.kchartlib.chart.draw.RSIDraw;
+import com.github.tifezh.kchartlib.chart.draw.VolumeDraw;
 
 /**
  * k线图
@@ -38,6 +37,7 @@ public class KChartView extends BaseKChartView {
     private RSIDraw mRSIDraw;
     private MainDraw mMainDraw;
     private KDJDraw mKDJDraw;
+    private VolumeDraw mVolumeDraw;
 
 
     public KChartView(Context context) {
@@ -60,11 +60,13 @@ public class KChartView extends BaseKChartView {
         layoutParams.addRule(CENTER_IN_PARENT);
         addView(mProgressBar,layoutParams);
         mProgressBar.setVisibility(GONE);
+        mVolumeDraw=new VolumeDraw(this);
         mMACDDraw=new MACDDraw(this);
         mKDJDraw=new KDJDraw(this);
         mRSIDraw=new RSIDraw(this);
         mBOLLDraw=new BOLLDraw(this);
         mMainDraw=new MainDraw(this);
+        addChildDraw("VOL",mVolumeDraw);
         addChildDraw("MACD",mMACDDraw);
         addChildDraw("KDJ", mKDJDraw);
         addChildDraw("RSI", mRSIDraw);
@@ -313,6 +315,7 @@ public class KChartView extends BaseKChartView {
      */
     public void setMa5Color(int color) {
         mMainDraw.setMa5Color(color);
+        mVolumeDraw.setMa5Color(color);
     }
 
     /**
@@ -321,6 +324,7 @@ public class KChartView extends BaseKChartView {
      */
     public void setMa10Color(int color) {
         mMainDraw.setMa10Color(color);
+        mVolumeDraw.setMa10Color(color);
     }
 
     /**
@@ -390,6 +394,7 @@ public class KChartView extends BaseKChartView {
         mRSIDraw.setTextSize(textSize);
         mMACDDraw.setTextSize(textSize);
         mKDJDraw.setTextSize(textSize);
+        mVolumeDraw.setTextSize(textSize);
     }
 
     @Override
@@ -400,6 +405,7 @@ public class KChartView extends BaseKChartView {
         mRSIDraw.setLineWidth(lineWidth);
         mMACDDraw.setLineWidth(lineWidth);
         mKDJDraw.setLineWidth(lineWidth);
+        mVolumeDraw.setLineWidth(lineWidth);
     }
 
     @Override

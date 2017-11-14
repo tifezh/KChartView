@@ -41,10 +41,7 @@ public class DataRequest {
 
     public static List<KLineEntity> getALL(Context context) {
         if (datas == null) {
-            final List<KLineEntity> data =
-                    new Gson().fromJson(getStringFromAssert(context, "ibm.json")
-                            , new TypeToken<List<KLineEntity>>() {
-                            }.getType());
+            final List<KLineEntity> data = new Gson().fromJson(getStringFromAssert(context, "ibm.json"), new TypeToken<List<KLineEntity>>() {}.getType());
             DataHelper.calculate(data);
             datas = data;
         }

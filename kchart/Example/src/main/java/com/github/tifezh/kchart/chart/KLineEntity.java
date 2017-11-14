@@ -14,80 +14,114 @@ public class KLineEntity implements KLineImpl {
         return Date;
     }
 
+    @Override
     public float getOpenPrice() {
         return Open;
     }
 
+    @Override
     public float getHighPrice() {
         return High;
     }
 
+    @Override
     public float getLowPrice() {
         return Low;
     }
 
+    @Override
     public float getClosePrice() {
         return Close;
     }
 
+    @Override
     public float getMA5Price() {
         return MA5Price;
     }
 
+    @Override
     public float getMA10Price() {
         return MA10Price;
     }
 
+    @Override
     public float getMA20Price() {
         return MA20Price;
     }
 
+    @Override
     public float getDea() {
         return dea;
     }
 
+    @Override
     public float getDif() {
         return dif;
     }
 
+    @Override
     public float getMacd() {
         return macd;
     }
 
+    @Override
     public float getK() {
         return k;
     }
 
+    @Override
     public float getD() {
         return d;
     }
 
+    @Override
     public float getJ() {
         return j;
     }
 
+    @Override
     public float getRsi1() {
         return rsi1;
     }
 
+    @Override
     public float getRsi2() {
         return rsi2;
     }
 
+    @Override
     public float getRsi3() {
         return rsi3;
     }
 
+    @Override
     public float getUp() {
         return up;
     }
 
+    @Override
     public float getMb() {
         return mb;
     }
 
+    @Override
     public float getDn() {
         return dn;
+    }
+
+    @Override
+    public float getVolume() {
+        return Volume;
+    }
+
+    @Override
+    public float getMA5Volume() {
+        return MA5Volume;
+    }
+
+    @Override
+    public float getMA10Volume() {
+        return MA10Volume;
     }
 
     public String Date;
@@ -126,5 +160,12 @@ public class KLineEntity implements KLineImpl {
     public float mb;
 
     public float dn;
+
+    public float MA5Volume;
+
+    public float MA10Volume;
+
+
+
 
 }
