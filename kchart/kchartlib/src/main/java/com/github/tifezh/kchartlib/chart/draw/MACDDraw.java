@@ -24,6 +24,7 @@ public class MACDDraw implements IChartDraw<MACDImpl> {
     private Paint mDIFPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mDEAPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mMACDPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    /**macd 中柱子的宽度*/
     private float mMACDWidth = 0;
 
     public MACDDraw(BaseKChartView view) {
@@ -72,8 +73,9 @@ public class MACDDraw implements IChartDraw<MACDImpl> {
     private void drawMACD(Canvas canvas, BaseKChartView view, float x, float macd) {
         float macdy = view.getChildY(macd);
         float r = mMACDWidth / 2;
-        float zeroy=view.getChildY(0);
+        float zeroy = view.getChildY(0);
         if (macd > 0) {
+            //               left   top   right  bottom
             canvas.drawRect(x - r, macdy, x + r, zeroy, mRedPaint);
         } else {
             canvas.drawRect(x - r, zeroy, x + r, macdy, mGreenPaint);

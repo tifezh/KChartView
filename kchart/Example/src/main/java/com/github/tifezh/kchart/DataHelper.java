@@ -220,5 +220,34 @@ public class DataHelper {
         calculateBOLL(datas);
         calculateRSI(datas);
         calculateKDJ(datas);
+        calculateVolumeMA(datas);
+    }
+
+    private static void calculateVolumeMA(List<KLineEntity> entries) {
+        float volumeMa5 = 0;
+        float volumeMa10 = 0;
+
+        for (int i = 0; i < entries.size(); i++) {
+            KLineEntity entry = entries.get(i);
+
+            volumeMa5 += entry.getVolume();
+            volumeMa10 += entry.getVolume();
+
+            if (i >= 5) {
+
+                volumeMa5 -= entries.get(i - 5).getVolume();
+                entry.MA5Volume = (volumeMa5 / 5f);
+            } else {
+
+                entry.MA5Volume = (volumeMa5 / (i + 1f));
+            }
+
+            if (i >= 10) {
+                volumeMa10 -= entries.get(i - 10).getVolume();
+                entry.MA10Volume = (volumeMa10 / 5f);
+            } else {
+                entry.MA10Volume = (volumeMa10 / (i + 1f));
+            }
+        }
     }
 }
