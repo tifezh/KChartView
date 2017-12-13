@@ -7,7 +7,9 @@ import android.support.annotation.Nullable;
 
 import com.github.tifezh.kchartlib.chart.BaseKChartView;
 import com.github.tifezh.kchartlib.chart.EntityImpl.BOLLImpl;
-import com.github.tifezh.kchartlib.chart.impl.IChartDraw;
+import com.github.tifezh.kchartlib.chart.base.IChartDraw;
+import com.github.tifezh.kchartlib.chart.base.IValueFormatter;
+import com.github.tifezh.kchartlib.chart.formatter.ValueFormatter;
 
 /**
  * BOLL实现类
@@ -59,6 +61,11 @@ public class BOLLDraw implements IChartDraw<BOLLImpl> {
             return point.getMb();
         }
         return point.getDn();
+    }
+
+    @Override
+    public IValueFormatter getValueFormatter() {
+        return new ValueFormatter();
     }
 
     /**

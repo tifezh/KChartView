@@ -7,7 +7,9 @@ import android.support.annotation.Nullable;
 
 import com.github.tifezh.kchartlib.chart.BaseKChartView;
 import com.github.tifezh.kchartlib.chart.EntityImpl.RSIImpl;
-import com.github.tifezh.kchartlib.chart.impl.IChartDraw;
+import com.github.tifezh.kchartlib.chart.base.IChartDraw;
+import com.github.tifezh.kchartlib.chart.base.IValueFormatter;
+import com.github.tifezh.kchartlib.chart.formatter.ValueFormatter;
 
 /**
  * RSI实现类
@@ -53,6 +55,11 @@ public class RSIDraw implements IChartDraw<RSIImpl> {
     @Override
     public float getMinValue(RSIImpl point) {
         return Math.min(point.getRsi1(), Math.min(point.getRsi2(), point.getRsi3()));
+    }
+
+    @Override
+    public IValueFormatter getValueFormatter() {
+        return new ValueFormatter();
     }
 
     public void setRSI1Color(int color) {

@@ -10,7 +10,9 @@ import android.support.v4.content.ContextCompat;
 import com.github.tifezh.kchartlib.R;
 import com.github.tifezh.kchartlib.chart.BaseKChartView;
 import com.github.tifezh.kchartlib.chart.EntityImpl.MACDImpl;
-import com.github.tifezh.kchartlib.chart.impl.IChartDraw;
+import com.github.tifezh.kchartlib.chart.base.IChartDraw;
+import com.github.tifezh.kchartlib.chart.base.IValueFormatter;
+import com.github.tifezh.kchartlib.chart.formatter.ValueFormatter;
 
 /**
  * macd实现类
@@ -62,6 +64,11 @@ public class MACDDraw implements IChartDraw<MACDImpl> {
     @Override
     public float getMinValue(MACDImpl point) {
         return Math.min(point.getMacd(), Math.min(point.getDea(), point.getDif()));
+    }
+
+    @Override
+    public IValueFormatter getValueFormatter() {
+        return new ValueFormatter();
     }
 
     /**

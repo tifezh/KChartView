@@ -1,4 +1,4 @@
-package com.github.tifezh.kchartlib.chart.impl;
+package com.github.tifezh.kchartlib.chart.base;
 
 import android.graphics.Canvas;
 import android.support.annotation.NonNull;
@@ -50,4 +50,9 @@ public interface IChartDraw<T> {
      * @return
      */
     float getMinValue(T point);
+
+    /**
+     * 获取value格式化器
+     */
+    IValueFormatter getValueFormatter();
 }

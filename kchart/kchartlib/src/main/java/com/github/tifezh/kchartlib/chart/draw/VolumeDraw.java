@@ -10,7 +10,10 @@ import android.support.v4.content.ContextCompat;
 import com.github.tifezh.kchartlib.R;
 import com.github.tifezh.kchartlib.chart.BaseKChartView;
 import com.github.tifezh.kchartlib.chart.EntityImpl.VolumeImpl;
-import com.github.tifezh.kchartlib.chart.impl.IChartDraw;
+import com.github.tifezh.kchartlib.chart.base.IChartDraw;
+import com.github.tifezh.kchartlib.chart.base.IValueFormatter;
+import com.github.tifezh.kchartlib.chart.formatter.BigValueFormatter;
+import com.github.tifezh.kchartlib.chart.formatter.ValueFormatter;
 import com.github.tifezh.kchartlib.utils.ViewUtil;
 
 /**
@@ -60,27 +63,35 @@ public class VolumeDraw implements IChartDraw<VolumeImpl> {
     @Override
     public void drawText(
             @NonNull Canvas canvas, @NonNull BaseKChartView view, int position, float x, float y) {
-
         VolumeImpl point = (VolumeImpl) view.getItem(position);
-        String text = "MA5:" + view.formatValue(point.getMA5Volume()) + " ";
+        String text = "VOL:" + getValueFormatter().format(point.getVolume()) + " ";
+        canvas.drawText(text, x, y, view.getTextPaint());
+        x += view.getTextPaint().measureText(text);
+        text = "MA5:" + getValueFormatter().format(point.getMA5Volume()) + " ";
         canvas.drawText(text, x, y, ma5Paint);
         x += ma5Paint.measureText(text);
-        text = "MA10:" + view.formatValue(point.getMA10Volume()) + " ";
+        text = "MA10:" + getValueFormatter().format(point.getMA10Volume()) + " ";
         canvas.drawText(text, x, y, ma10Paint);
     }
 
     @Override
     public float getMaxValue(VolumeImpl point) {
-        return Math.max(point.getVolume(),Math.max(point.getMA5Volume(),point.getMA10Volume()));
+        return Math.max(point.getVolume(), Math.max(point.getMA5Volume(), point.getMA10Volume()));
     }
 
     @Override
     public float getMinValue(VolumeImpl point) {
-        return Math.min(point.getVolume(),Math.min(point.getMA5Volume(),point.getMA10Volume()));
+        return Math.min(point.getVolume(), Math.min(point.getMA5Volume(), point.getMA10Volume()));
+    }
+
+    @Override
+    public IValueFormatter getValueFormatter() {
+        return new BigValueFormatter();
     }
 
     /**
      * 设置 MA5 线的颜色
+     *
      * @param color
      */
     public void setMa5Color(int color) {
@@ -89,6 +100,7 @@ public class VolumeDraw implements IChartDraw<VolumeImpl> {
 
     /**
      * 设置 MA10 线的颜色
+     *
      * @param color
      */
     public void setMa10Color(int color) {
@@ -102,6 +114,7 @@ public class VolumeDraw implements IChartDraw<VolumeImpl> {
 
     /**
      * 设置文字大小
+     *
      * @param textSize
      */
     public void setTextSize(float textSize) {

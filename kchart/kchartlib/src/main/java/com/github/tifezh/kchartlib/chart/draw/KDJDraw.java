@@ -7,7 +7,9 @@ import android.support.annotation.Nullable;
 
 import com.github.tifezh.kchartlib.chart.BaseKChartView;
 import com.github.tifezh.kchartlib.chart.EntityImpl.KDJImpl;
-import com.github.tifezh.kchartlib.chart.impl.IChartDraw;
+import com.github.tifezh.kchartlib.chart.base.IChartDraw;
+import com.github.tifezh.kchartlib.chart.base.IValueFormatter;
+import com.github.tifezh.kchartlib.chart.formatter.ValueFormatter;
 
 /**
  * KDJ实现类
@@ -52,6 +54,11 @@ public class KDJDraw implements IChartDraw<KDJImpl> {
     @Override
     public float getMinValue(KDJImpl point) {
         return Math.min(point.getK(), Math.min(point.getD(), point.getJ()));
+    }
+
+    @Override
+    public IValueFormatter getValueFormatter() {
+        return new ValueFormatter();
     }
 
     /**

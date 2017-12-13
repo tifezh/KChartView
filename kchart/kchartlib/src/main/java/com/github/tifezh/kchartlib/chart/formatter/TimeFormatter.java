@@ -1,6 +1,6 @@
 package com.github.tifezh.kchartlib.chart.formatter;
 
-import com.github.tifezh.kchartlib.chart.impl.IDateTimeFormatter;
+import com.github.tifezh.kchartlib.chart.base.IDateTimeFormatter;
 import com.github.tifezh.kchartlib.utils.DateUtil;
 
 import java.util.Date;

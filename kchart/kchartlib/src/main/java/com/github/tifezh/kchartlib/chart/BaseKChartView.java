@@ -17,10 +17,10 @@ import com.github.tifezh.kchartlib.R;
 import com.github.tifezh.kchartlib.chart.EntityImpl.KLineImpl;
 import com.github.tifezh.kchartlib.chart.formatter.TimeFormatter;
 import com.github.tifezh.kchartlib.chart.formatter.ValueFormatter;
-import com.github.tifezh.kchartlib.chart.impl.IAdapter;
-import com.github.tifezh.kchartlib.chart.impl.IChartDraw;
-import com.github.tifezh.kchartlib.chart.impl.IDateTimeFormatter;
-import com.github.tifezh.kchartlib.chart.impl.IValueFormatter;
+import com.github.tifezh.kchartlib.chart.base.IAdapter;
+import com.github.tifezh.kchartlib.chart.base.IChartDraw;
+import com.github.tifezh.kchartlib.chart.base.IDateTimeFormatter;
+import com.github.tifezh.kchartlib.chart.base.IValueFormatter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -292,8 +292,8 @@ public abstract class BaseKChartView extends ScrollAndScaleView {
         }
         //--------------画下方子图的值-------------
         if (mChildDraw != null) {
-            canvas.drawText(formatValue(mChildMaxValue), 0, mChildRect.top+ baseLine, mTextPaint);
-            canvas.drawText(formatValue(mChildMinValue), 0, mChildRect.bottom, mTextPaint);
+            canvas.drawText(mChildDraw.getValueFormatter().format(mChildMaxValue), 0, mChildRect.top+ baseLine, mTextPaint);
+            canvas.drawText(mChildDraw.getValueFormatter().format(mChildMinValue), 0, mChildRect.bottom, mTextPaint);
         }
         //--------------画时间---------------------
         float columnSpace = mWidth / mGridColumns;
@@ -354,7 +354,7 @@ public abstract class BaseKChartView extends ScrollAndScaleView {
             }
             if (mChildDraw != null) {
                 float y = mChildRect.top + baseLine;
-                float x = mTextPaint.measureText(formatValue(mChildMaxValue) + " ");
+                float x = mTextPaint.measureText(mChildDraw.getValueFormatter().format(mChildMaxValue) + " ");
                 mChildDraw.drawText(canvas, this, position, x, y);
             }
         }
@@ -903,5 +903,21 @@ public abstract class BaseKChartView extends ScrollAndScaleView {
      */
     public void setPointWidth(float pointWidth) {
         mPointWidth = pointWidth;
+    }
+
+    public Paint getGridPaint() {
+        return mGridPaint;
+    }
+
+    public Paint getTextPaint() {
+        return mTextPaint;
+    }
+
+    public Paint getBackgroundPaint() {
+        return mBackgroundPaint;
+    }
+
+    public Paint getSelectedLinePaint() {
+        return mSelectedLinePaint;
     }
 }

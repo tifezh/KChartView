@@ -1,4 +1,4 @@
-package com.github.tifezh.kchartlib.chart.impl;
+package com.github.tifezh.kchartlib.chart.base;
 
 /**
  * Value格式化接口

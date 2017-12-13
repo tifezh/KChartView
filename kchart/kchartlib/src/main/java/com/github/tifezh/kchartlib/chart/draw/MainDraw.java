@@ -12,7 +12,9 @@ import com.github.tifezh.kchartlib.R;
 import com.github.tifezh.kchartlib.chart.BaseKChartView;
 import com.github.tifezh.kchartlib.chart.EntityImpl.CandleImpl;
 import com.github.tifezh.kchartlib.chart.EntityImpl.KLineImpl;
-import com.github.tifezh.kchartlib.chart.impl.IChartDraw;
+import com.github.tifezh.kchartlib.chart.base.IChartDraw;
+import com.github.tifezh.kchartlib.chart.base.IValueFormatter;
+import com.github.tifezh.kchartlib.chart.formatter.ValueFormatter;
 import com.github.tifezh.kchartlib.utils.ViewUtil;
 
 import java.util.ArrayList;
@@ -87,6 +89,11 @@ public class MainDraw implements IChartDraw<CandleImpl>{
     @Override
     public float getMinValue(CandleImpl point) {
         return Math.min(point.getMA20Price(), point.getLowPrice());
+    }
+
+    @Override
+    public IValueFormatter getValueFormatter() {
+        return new ValueFormatter();
     }
 
     /**

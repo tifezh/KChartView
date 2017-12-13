@@ -1,6 +1,6 @@
 package com.github.tifezh.kchartlib.chart.formatter;
 
-import com.github.tifezh.kchartlib.chart.impl.IValueFormatter;
+import com.github.tifezh.kchartlib.chart.base.IValueFormatter;
 
 /**
  * Value格式化类
