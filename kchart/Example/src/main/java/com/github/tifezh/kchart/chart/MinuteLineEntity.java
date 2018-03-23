@@ -20,7 +20,7 @@ public class MinuteLineEntity implements MinuteLineImpl{
     public Date time;
     public float price;
     public float avg;
-    public int vol;
+    public int volume;
 
     @Override
     public float getAvgPrice() {
@@ -35,6 +35,11 @@ public class MinuteLineEntity implements MinuteLineImpl{
     @Override
     public Date getDate() {
         return time;
+    }
+
+    @Override
+    public int getVolume() {
+        return volume;
     }
 
 

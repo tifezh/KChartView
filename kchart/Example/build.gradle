@@ -23,7 +23,6 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:25.0.0'
     compile project(path: ':kchartlib')
-    compile 'org.apache.httpcomponents:httpcore:4.4.4'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.google.code.gson:gson:2.7'
 }

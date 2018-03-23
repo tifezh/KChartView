@@ -6,13 +6,17 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.github.tifezh.kchartlib.R;
 import com.github.tifezh.kchartlib.chart.EntityImpl.MinuteLineImpl;
+import com.github.tifezh.kchartlib.chart.base.IValueFormatter;
+import com.github.tifezh.kchartlib.chart.formatter.BigValueFormatter;
 import com.github.tifezh.kchartlib.utils.DateUtil;
 
 import java.util.ArrayList;
@@ -26,22 +30,29 @@ import java.util.List;
  */
 public class MinuteChartView extends View implements GestureDetector.OnGestureListener {
 
+    private final static int ONE_MINUTE=60000;
+
     private int mHeight = 0;
     private int mWidth = 0;
+    private int mVolumeHeight=100;
     private int mTopPadding = 15;
     private int mBottomPadding = 15;
     private int mGridRows = 6;
-    private int GridColumns = 1;
+    private int GridColumns = 5;
     private Paint mAvgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mGridPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mPricePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mBackgroundPaint= new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint mVolumePaintRed=new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint mVolumePaintGreen=new Paint(Paint.ANTI_ALIAS_FLAG);
     private int mBackgroundColor;
     private float mValueMin;
     private float mValueMax;
+    private float mVolumeMax;
     private float mValueStart;
     private float mScaleY = 1;
+    private float mVolumeScaleY=1;
     private float mTextSize = 10;
     private boolean isLongPress = false;
     private int selectedIndex;
@@ -52,6 +63,10 @@ public class MinuteChartView extends View implements GestureDetector.OnGestureLi
     private Date mSecondStartTime;
     private Date mSecondEndTime;
     private long mTotalTime;
+    private float mPointWidth;
+
+    private IValueFormatter mVolumeFormatter;
+
     public MinuteChartView(Context context) {
         super(context);
         init();
@@ -72,6 +87,7 @@ public class MinuteChartView extends View implements GestureDetector.OnGestureLi
         mTopPadding = dp2px(mTopPadding);
         mBottomPadding = dp2px(mBottomPadding);
         mTextSize = sp2px(mTextSize);
+        mVolumeHeight=dp2px(mVolumeHeight);
         mGridPaint.setColor(Color.parseColor("#353941"));
         mGridPaint.setStrokeWidth(dp2px(1));
         mTextPaint.setColor(Color.parseColor("#B1B2B6"));
@@ -83,8 +99,12 @@ public class MinuteChartView extends View implements GestureDetector.OnGestureLi
         mPricePaint.setColor(Color.parseColor("#FF6600"));
         mPricePaint.setStrokeWidth(dp2px(0.5f));
         mPricePaint.setTextSize(mTextSize);
+        mVolumePaintGreen.setColor(ContextCompat.getColor(getContext(), R.color.chart_green));
+        mVolumePaintRed.setColor(ContextCompat.getColor(getContext(),R.color.chart_red));
         mBackgroundColor =Color.parseColor("#202326");
         mBackgroundPaint.setColor(mBackgroundColor);
+
+        mVolumeFormatter=new BigValueFormatter();
     }
 
     @Override
@@ -134,17 +154,26 @@ public class MinuteChartView extends View implements GestureDetector.OnGestureLi
         if(mSecondStartTime!=null&&date.getTime()>=mSecondStartTime.getTime())
         {
             return 1f* (date.getTime()-mSecondStartTime.getTime()+60000+
-                    mFirstEndTime.getTime()-mFirstStartTime.getTime()) /mTotalTime* mWidth;
+                    mFirstEndTime.getTime()-mFirstStartTime.getTime()) /mTotalTime* (mWidth-mPointWidth)+mPointWidth/2f;
         }
         else {
-            return 1f*(date.getTime()-mFirstStartTime.getTime())/mTotalTime* mWidth;
+            return 1f*(date.getTime()-mFirstStartTime.getTime())/mTotalTime* (mWidth-mPointWidth)+mPointWidth/2f;
         }
     }
+
+    /**
+     * 获取最大能有多少个点
+     */
+    private long getMaxPointCount(){
+       return mTotalTime/ONE_MINUTE;
+    }
+
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        this.mHeight = h - mTopPadding - mBottomPadding;
+        int height = h - mTopPadding - mBottomPadding;
+        this.mHeight = height-mVolumeHeight;
         this.mWidth = w;
         notifyChanged();
     }
@@ -209,17 +238,24 @@ public class MinuteChartView extends View implements GestureDetector.OnGestureLi
             MinuteLineImpl point = mPoints.get(i);
             mValueMax=Math.max(mValueMax,point.getPrice());
             mValueMin=Math.min(mValueMin,point.getPrice());
+            mVolumeMax=Math.max(mVolumeMax,point.getVolume());
         }
         //最大值和开始值的差值
         float offsetValueMax = mValueMax - mValueStart;
         float offsetValueMin = mValueStart - mValueMin;
         //以开始的点为中点值   上下间隙多出20%
         float offset = (offsetValueMax > offsetValueMin ? offsetValueMax : offsetValueMin) * 1.2f;
+        mVolumeMax*=1.1f;
         //坐标轴高度以开始的点对称
         mValueMax = mValueStart + offset;
         mValueMin = mValueStart - offset;
         //y轴的缩放值
         mScaleY = mHeight / (mValueMax - mValueMin);
+        //成交量的缩放值
+        mVolumeScaleY = mVolumeHeight / mVolumeMax;
+        mPointWidth=(float) mWidth/getMaxPointCount();
+        mVolumePaintRed.setStrokeWidth(mPointWidth*0.8f);
+        mVolumePaintGreen.setStrokeWidth(mPointWidth*0.8f);
         invalidate();
     }
 
@@ -239,6 +275,9 @@ public class MinuteChartView extends View implements GestureDetector.OnGestureLi
                 float curX=getX(i);
                 canvas.drawLine(lastX, getY(lastPoint.getPrice()), curX, getY(curPoint.getPrice()), mPricePaint);
                 canvas.drawLine(lastX, getY(lastPoint.getAvgPrice()),curX, getY(curPoint.getAvgPrice()), mAvgPaint);
+                //成交量
+                Paint volumePaint=((i==0&&curPoint.getPrice()<=mValueStart)||curPoint.getPrice()<=lastPoint.getPrice())?mVolumePaintGreen:mVolumePaintRed;
+                canvas.drawLine(curX,getVolumeY(0),curX,getVolumeY(curPoint.getVolume()),volumePaint);
                 lastPoint = curPoint;
                 lastX=curX;
             }
@@ -248,7 +287,7 @@ public class MinuteChartView extends View implements GestureDetector.OnGestureLi
         if (isLongPress) {
             MinuteLineImpl point = mPoints.get(selectedIndex);
             float x=getX(selectedIndex);
-            canvas.drawLine(x, 0, x, mHeight, mTextPaint);
+            canvas.drawLine(x, 0, x, mHeight+mVolumeHeight, mTextPaint);
             canvas.drawLine(0, getY(point.getPrice()), mWidth, getY(point.getPrice()), mTextPaint);
             //画指示线的时间
             String text = DateUtil.shortTimeFormat.format(point.getDate());
@@ -263,8 +302,8 @@ public class MinuteChartView extends View implements GestureDetector.OnGestureLi
             float textHeight = fm.descent - fm.ascent;
             float baseLine = (textHeight - fm.bottom - fm.top) / 2;
             //下方时间
-            canvas.drawRect(x,mHeight-baseLine+textHeight,x+mTextPaint.measureText(text),mHeight+baseLine,mBackgroundPaint);
-            canvas.drawText(text, x, mHeight+baseLine, mTextPaint);
+            canvas.drawRect(x,mHeight+mVolumeHeight-baseLine+textHeight,x+mTextPaint.measureText(text),mVolumeHeight+mHeight+baseLine,mBackgroundPaint);
+            canvas.drawText(text, x, mHeight+mVolumeHeight+baseLine, mTextPaint);
 
             float r = textHeight / 2;
             float y=getY(point.getPrice());
@@ -296,6 +335,9 @@ public class MinuteChartView extends View implements GestureDetector.OnGestureLi
             x += mPricePaint.measureText(text);
             text = "均价:" + floatToString(point.getAvgPrice()) + " ";
             canvas.drawText(text, x, y, mAvgPaint);
+            //成交量
+            text="VOL:"+mVolumeFormatter.format(point.getVolume());
+            canvas.drawText(text,mWidth-mTextPaint.measureText(text),mHeight+baseLine,mTextPaint);
         }
     }
 
@@ -304,6 +346,10 @@ public class MinuteChartView extends View implements GestureDetector.OnGestureLi
      */
     private float getY(float value) {
         return (mValueMax - value) * mScaleY;
+    }
+
+    private float getVolumeY(float value){
+        return (mVolumeMax -value) * mVolumeScaleY + mHeight;
     }
 
     private void drawGird(Canvas canvas) {
@@ -317,10 +363,12 @@ public class MinuteChartView extends View implements GestureDetector.OnGestureLi
             canvas.drawLine(0, rowSpace * i, mWidth, rowSpace * i, mGridPaint);
         }
         canvas.drawLine(0, rowSpace * mGridRows /2, mWidth, rowSpace * mGridRows /2, mGridPaint);
+
+        canvas.drawLine(0, mHeight+mVolumeHeight, mWidth, mHeight+mVolumeHeight, mGridPaint);
         //纵向的grid
         float columnSpace = mWidth / GridColumns;
         for (int i = 0; i <= GridColumns; i++) {
-            canvas.drawLine(columnSpace * i, 0, columnSpace * i, mHeight, mGridPaint);
+            canvas.drawLine(columnSpace * i, 0, columnSpace * i, mHeight+mVolumeHeight, mGridPaint);
         }
 
     }
@@ -358,10 +406,12 @@ public class MinuteChartView extends View implements GestureDetector.OnGestureLi
             }
         }
         //画时间
-        float y = mHeight +baseLine;
+        float y = mHeight+ mVolumeHeight +baseLine;
         canvas.drawText(DateUtil.shortTimeFormat.format(mFirstStartTime), 0, y, mTextPaint);
         canvas.drawText(DateUtil.shortTimeFormat.format(mSecondEndTime),
                 mWidth - mTextPaint.measureText(DateUtil.shortTimeFormat.format(mSecondEndTime)), y, mTextPaint);
+        //成交量
+        canvas.drawText(mVolumeFormatter.format(mVolumeMax),0,mHeight+baseLine,mTextPaint);
     }
 
     public int dp2px(float dp) {
@@ -465,5 +515,13 @@ public class MinuteChartView extends View implements GestureDetector.OnGestureLi
     public MinuteLineImpl getItem(int position)
     {
         return mPoints.get(position);
+    }
+
+    /**
+     * 设置成交量格式化器
+     * @param volumeFormatter {@link IValueFormatter} 成交量格式化器
+     */
+    public void setVolumeFormatter(IValueFormatter volumeFormatter) {
+        mVolumeFormatter = volumeFormatter;
     }
 }

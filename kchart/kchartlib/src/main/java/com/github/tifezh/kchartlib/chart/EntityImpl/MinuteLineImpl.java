@@ -20,4 +20,6 @@ public interface MinuteLineImpl {
     float getPrice();
 
     Date getDate();
+
+    int getVolume();
 }

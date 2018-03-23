@@ -58,7 +58,7 @@ public class MinuteChartActivity extends AppCompatActivity {
             Date secondStartTime = DateUtil.shortTimeFormat.parse("13:00");
             //获取随机生成的数据
             List<MinuteLineEntity> minuteData =
-                    DataRequest.getMinuteData(this,startTime,
+                    DataRequest.getMinuteData(startTime,
                             endTime,
                             firstEndTime,
                             secondStartTime);

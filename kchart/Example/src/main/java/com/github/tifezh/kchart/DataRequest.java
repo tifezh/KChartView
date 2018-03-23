@@ -9,8 +9,6 @@ import com.github.tifezh.kchart.chart.MinuteLineEntity;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.apache.http.util.EncodingUtils;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,7 +30,7 @@ public class DataRequest {
             int length = in.available();
             byte[] buffer = new byte[length];
             in.read(buffer);
-            return EncodingUtils.getString(buffer, "UTF-8");
+            return new String(buffer, 0, buffer.length, "UTF-8");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -70,8 +68,7 @@ public class DataRequest {
      * 随机生成分时数据
      */
     public static List<MinuteLineEntity>
-    getMinuteData(Context context,
-                  @NonNull Date startTime,
+    getMinuteData(@NonNull Date startTime,
                   @NonNull Date endTime,
                   @Nullable Date firstEndTime,
                   @Nullable Date secondStartTime) {
@@ -101,6 +98,7 @@ public class DataRequest {
             }
         }
         randomLine(list);
+        randomVolume(list);
         float sum = 0;
         for (int i = 0; i < list.size(); i++) {
             MinuteLineEntity data = list.get(i);
@@ -108,6 +106,12 @@ public class DataRequest {
             data.avg = 1f * sum / (i + 1);
         }
         return list;
+    }
+
+    private static void randomVolume(List<MinuteLineEntity> list){
+        for(MinuteLineEntity data:list){
+            data.volume= (int) (Math.random()*Math.random()*Math.random()*Math.random()*10000000);
+        }
     }
 
     /**
