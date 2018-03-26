@@ -7,11 +7,10 @@ KChart for Android ；股票k线图
 <div class='row'>
         <img src='https://github.com/tifezh/KChartView/blob/master/img/demo.gif' width="300px"/>
 </div>
+
 * 支持自定义样式
 <div class='row'>
         <img src='https://github.com/tifezh/KChartView/blob/master/img/style1.png' width="300px"/>
-</div>
-<div class='row'>
         <img src='https://github.com/tifezh/KChartView/blob/master/img/style2.png' width="300px"/>
 </div>
 
