@@ -1,6 +1,6 @@
 package com.github.tifezh.kchart.chart;
 
-import com.github.tifezh.kchartlib.chart.EntityImpl.KLineImpl;
+import com.github.tifezh.kchartlib.chart.entity.IKLine;
 
 
 /**
@@ -8,7 +8,7 @@ import com.github.tifezh.kchartlib.chart.EntityImpl.KLineImpl;
  * Created by tifezh on 2016/5/16.
  */
 
-public class KLineEntity implements KLineImpl {
+public class KLineEntity implements IKLine {
 
     public String getDatetime() {
         return Date;

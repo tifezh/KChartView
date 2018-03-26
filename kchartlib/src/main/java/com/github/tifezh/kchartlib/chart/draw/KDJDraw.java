@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.github.tifezh.kchartlib.chart.BaseKChartView;
-import com.github.tifezh.kchartlib.chart.EntityImpl.KDJImpl;
+import com.github.tifezh.kchartlib.chart.entity.IKDJ;
 import com.github.tifezh.kchartlib.chart.base.IChartDraw;
 import com.github.tifezh.kchartlib.chart.base.IValueFormatter;
 import com.github.tifezh.kchartlib.chart.formatter.ValueFormatter;
@@ -16,7 +16,7 @@ import com.github.tifezh.kchartlib.chart.formatter.ValueFormatter;
  * Created by tifezh on 2016/6/19.
  */
 
-public class KDJDraw implements IChartDraw<KDJImpl> {
+public class KDJDraw implements IChartDraw<IKDJ> {
 
     private Paint mKPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mDPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -26,7 +26,7 @@ public class KDJDraw implements IChartDraw<KDJImpl> {
     }
 
     @Override
-    public void drawTranslated(@Nullable KDJImpl lastPoint, @NonNull KDJImpl curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull BaseKChartView view, int position) {
+    public void drawTranslated(@Nullable IKDJ lastPoint, @NonNull IKDJ curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull BaseKChartView view, int position) {
         view.drawChildLine(canvas, mKPaint, lastX, lastPoint.getK(), curX, curPoint.getK());
         view.drawChildLine(canvas, mDPaint, lastX, lastPoint.getD(), curX, curPoint.getD());
         view.drawChildLine(canvas, mJPaint, lastX, lastPoint.getJ(), curX, curPoint.getJ());
@@ -35,7 +35,7 @@ public class KDJDraw implements IChartDraw<KDJImpl> {
     @Override
     public void drawText(@NonNull Canvas canvas, @NonNull BaseKChartView view, int position, float x, float y) {
         String text = "";
-        KDJImpl point = (KDJImpl) view.getItem(position);
+        IKDJ point = (IKDJ) view.getItem(position);
         text = "K:" + view.formatValue(point.getK()) + " ";
         canvas.drawText(text, x, y, mKPaint);
         x += mKPaint.measureText(text);
@@ -47,12 +47,12 @@ public class KDJDraw implements IChartDraw<KDJImpl> {
     }
 
     @Override
-    public float getMaxValue(KDJImpl point) {
+    public float getMaxValue(IKDJ point) {
         return Math.max(point.getK(), Math.max(point.getD(), point.getJ()));
     }
 
     @Override
-    public float getMinValue(KDJImpl point) {
+    public float getMinValue(IKDJ point) {
         return Math.min(point.getK(), Math.min(point.getD(), point.getJ()));
     }
 

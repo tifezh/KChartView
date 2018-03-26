@@ -69,10 +69,10 @@ KChart for Android ；股票k线图
     </com.github.tifezh.kchartlib.chart.KChartView>
 ```
 
-##### 数据实体继承KLineImpl类 获取各个指标的值
+##### 数据实体继承IKLine类 获取各个指标的值
 
 ```java
-public class KLineEntity implements KLineImpl {
+public class KLineEntity implements KLine {
 
     public String getDatetime() {
         return Date;
@@ -246,7 +246,7 @@ public class KChartAdapter extends BaseKChartAdapter {
 ##### 加载数据
 
 ```java
- mKChartView.showLoading();
+mKChartView.showLoading();
 new Thread(new Runnable() {
     @Override
     public void run() {
@@ -272,15 +272,28 @@ new Thread(new Runnable() {
 ##### 添加其他指数 以添加kdj指标为例
 * 定义kdj中的值
 ```java
-public interface KDJImpl {
-    public float getK();
-    public float getD();
-    public float getJ();
+public interface IKDJ {
+
+    /**
+     * K值
+     */
+    float getK();
+
+    /**
+     * D值
+     */
+    float getD();
+
+    /**
+     * J值
+     */
+    float getJ();
+
 }
 ```
 * 实现IChartDraw接口
 ```java
-public class KDJDraw implements IChartDraw<KDJImpl> {
+public class KDJDraw implements IChartDraw<IKDJ> {
 
     private Paint mKPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mDPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -290,7 +303,7 @@ public class KDJDraw implements IChartDraw<KDJImpl> {
     }
 
     @Override
-    public void drawTranslated(@Nullable KDJImpl lastPoint, @NonNull KDJImpl curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull BaseKChartView view, int position) {
+    public void drawTranslated(@Nullable IKDJ lastPoint, @NonNull IKDJ curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull BaseKChartView view, int position) {
         view.drawChildLine(canvas, mKPaint, lastX, lastPoint.getK(), curX, curPoint.getK());
         view.drawChildLine(canvas, mDPaint, lastX, lastPoint.getD(), curX, curPoint.getD());
         view.drawChildLine(canvas, mJPaint, lastX, lastPoint.getJ(), curX, curPoint.getJ());
@@ -299,7 +312,7 @@ public class KDJDraw implements IChartDraw<KDJImpl> {
     @Override
     public void drawText(@NonNull Canvas canvas, @NonNull BaseKChartView view, int position, float x, float y) {
         String text = "";
-        KDJImpl point = (KDJImpl) view.getItem(position);
+        IKDJ point = (IKDJ) view.getItem(position);
         text = "K:" + view.formatValue(point.getK()) + " ";
         canvas.drawText(text, x, y, mKPaint);
         x += mKPaint.measureText(text);
@@ -311,12 +324,12 @@ public class KDJDraw implements IChartDraw<KDJImpl> {
     }
 
     @Override
-    public float getMaxValue(KDJImpl point) {
+    public float getMaxValue(IKDJ point) {
         return Math.max(point.getK(), Math.max(point.getD(), point.getJ()));
     }
 
     @Override
-    public float getMinValue(KDJImpl point) {
+    public float getMinValue(IKDJ point) {
         return Math.min(point.getK(), Math.min(point.getD(), point.getJ()));
     }
 
@@ -370,7 +383,7 @@ mKChartView.addChildDraw("KDJ", mKDJDraw);
 * 重写 drawTranslated（在此方法中绘画的会滑动和缩放） 方法 ，如下所示：
 ```java
  @Override
-public void drawTranslated(@Nullable MACDImpl lastPoint, @NonNull MACDImpl curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull BaseKChartView view, int position) {
+public void drawTranslated(@Nullable IMACD lastPoint, @NonNull IMACD curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull BaseKChartView view, int position) {
     drawMACD(canvas, view, curX, curPoint.getMacd());
     view.drawChildLine(canvas, mDIFPaint, lastX, lastPoint.getDea(), curX, curPoint.getDea());
     view.drawChildLine(canvas, mDEAPaint, lastX, lastPoint.getDif(), curX, curPoint.getDif());

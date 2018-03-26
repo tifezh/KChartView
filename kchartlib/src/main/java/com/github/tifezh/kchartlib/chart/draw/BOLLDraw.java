@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.github.tifezh.kchartlib.chart.BaseKChartView;
-import com.github.tifezh.kchartlib.chart.EntityImpl.BOLLImpl;
+import com.github.tifezh.kchartlib.chart.entity.IBOLL;
 import com.github.tifezh.kchartlib.chart.base.IChartDraw;
 import com.github.tifezh.kchartlib.chart.base.IValueFormatter;
 import com.github.tifezh.kchartlib.chart.formatter.ValueFormatter;
@@ -16,7 +16,7 @@ import com.github.tifezh.kchartlib.chart.formatter.ValueFormatter;
  * Created by tifezh on 2016/6/19.
  */
 
-public class BOLLDraw implements IChartDraw<BOLLImpl> {
+public class BOLLDraw implements IChartDraw<IBOLL> {
 
     private Paint mUpPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mMbPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -27,7 +27,7 @@ public class BOLLDraw implements IChartDraw<BOLLImpl> {
     }
 
     @Override
-    public void drawTranslated(@Nullable BOLLImpl lastPoint, @NonNull BOLLImpl curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull BaseKChartView view, int position) {
+    public void drawTranslated(@Nullable IBOLL lastPoint, @NonNull IBOLL curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull BaseKChartView view, int position) {
         view.drawChildLine(canvas, mUpPaint, lastX, lastPoint.getUp(), curX, curPoint.getUp());
         view.drawChildLine(canvas, mMbPaint, lastX, lastPoint.getMb(), curX, curPoint.getMb());
         view.drawChildLine(canvas, mDnPaint, lastX, lastPoint.getDn(), curX, curPoint.getDn());
@@ -36,7 +36,7 @@ public class BOLLDraw implements IChartDraw<BOLLImpl> {
     @Override
     public void drawText(@NonNull Canvas canvas, @NonNull BaseKChartView view, int position, float x, float y) {
         String text = "";
-        BOLLImpl point = (BOLLImpl) view.getItem(position);
+        IBOLL point = (IBOLL) view.getItem(position);
         text = "UP:" + view.formatValue(point.getUp()) + " ";
         canvas.drawText(text, x, y, mUpPaint);
         x += mUpPaint.measureText(text);
@@ -48,7 +48,7 @@ public class BOLLDraw implements IChartDraw<BOLLImpl> {
     }
 
     @Override
-    public float getMaxValue(BOLLImpl point) {
+    public float getMaxValue(IBOLL point) {
         if (Float.isNaN(point.getUp())) {
             return point.getMb();
         }
@@ -56,7 +56,7 @@ public class BOLLDraw implements IChartDraw<BOLLImpl> {
     }
 
     @Override
-    public float getMinValue(BOLLImpl point) {
+    public float getMinValue(IBOLL point) {
         if (Float.isNaN(point.getDn())) {
             return point.getMb();
         }

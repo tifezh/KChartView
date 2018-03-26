@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.github.tifezh.kchartlib.R;
-import com.github.tifezh.kchartlib.chart.EntityImpl.KLineImpl;
+import com.github.tifezh.kchartlib.chart.entity.IKLine;
 import com.github.tifezh.kchartlib.chart.formatter.TimeFormatter;
 import com.github.tifezh.kchartlib.chart.formatter.ValueFormatter;
 import com.github.tifezh.kchartlib.chart.base.IAdapter;
@@ -260,7 +260,7 @@ public abstract class BaseKChartView extends ScrollAndScaleView {
         }
         //画选择线
         if (isLongPress) {
-            KLineImpl point = (KLineImpl) getItem(mSelectedIndex);
+            IKLine point = (IKLine) getItem(mSelectedIndex);
             float x = getX(mSelectedIndex);
             float y = getMainY(point.getClosePrice());
             canvas.drawLine(x, mMainRect.top, x, mMainRect.bottom, mSelectedLinePaint);
@@ -321,7 +321,7 @@ public abstract class BaseKChartView extends ScrollAndScaleView {
             canvas.drawText(text, mWidth - mTextPaint.measureText(text), y, mTextPaint);
         }
         if (isLongPress) {
-            KLineImpl point = (KLineImpl) getItem(mSelectedIndex);
+            IKLine point = (IKLine) getItem(mSelectedIndex);
             String text = formatValue(point.getClosePrice());
             float r = textHeight / 2;
             y = getMainY(point.getClosePrice());
@@ -442,7 +442,7 @@ public abstract class BaseKChartView extends ScrollAndScaleView {
         mStartIndex = indexOfTranslateX(xToTranslateX(0));
         mStopIndex = indexOfTranslateX(xToTranslateX(mWidth));
         for (int i = mStartIndex; i <= mStopIndex; i++) {
-            KLineImpl point = (KLineImpl) getItem(i);
+            IKLine point = (IKLine) getItem(i);
             if (mMainDraw != null) {
                 mMainMaxValue = Math.max(mMainMaxValue, mMainDraw.getMaxValue(point));
                 mMainMinValue = Math.min(mMainMinValue, mMainDraw.getMinValue(point));

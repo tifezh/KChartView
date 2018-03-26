@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.github.tifezh.kchartlib.chart.BaseKChartView;
-import com.github.tifezh.kchartlib.chart.EntityImpl.RSIImpl;
+import com.github.tifezh.kchartlib.chart.entity.IRSI;
 import com.github.tifezh.kchartlib.chart.base.IChartDraw;
 import com.github.tifezh.kchartlib.chart.base.IValueFormatter;
 import com.github.tifezh.kchartlib.chart.formatter.ValueFormatter;
@@ -16,7 +16,7 @@ import com.github.tifezh.kchartlib.chart.formatter.ValueFormatter;
  * Created by tifezh on 2016/6/19.
  */
 
-public class RSIDraw implements IChartDraw<RSIImpl> {
+public class RSIDraw implements IChartDraw<IRSI> {
 
     private Paint mRSI1Paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mRSI2Paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -27,7 +27,7 @@ public class RSIDraw implements IChartDraw<RSIImpl> {
     }
 
     @Override
-    public void drawTranslated(@Nullable RSIImpl lastPoint, @NonNull RSIImpl curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull BaseKChartView view, int position) {
+    public void drawTranslated(@Nullable IRSI lastPoint, @NonNull IRSI curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull BaseKChartView view, int position) {
         view.drawChildLine(canvas, mRSI1Paint, lastX, lastPoint.getRsi1(), curX, curPoint.getRsi1());
         view.drawChildLine(canvas, mRSI2Paint, lastX, lastPoint.getRsi2(), curX, curPoint.getRsi2());
         view.drawChildLine(canvas, mRSI3Paint, lastX, lastPoint.getRsi3(), curX, curPoint.getRsi3());
@@ -36,7 +36,7 @@ public class RSIDraw implements IChartDraw<RSIImpl> {
     @Override
     public void drawText(@NonNull Canvas canvas, @NonNull BaseKChartView view, int position, float x, float y) {
         String text = "";
-        RSIImpl point = (RSIImpl) view.getItem(position);
+        IRSI point = (IRSI) view.getItem(position);
         text = "RSI1:" + view.formatValue(point.getRsi1()) + " ";
         canvas.drawText(text, x, y, mRSI1Paint);
         x += mRSI1Paint.measureText(text);
@@ -48,12 +48,12 @@ public class RSIDraw implements IChartDraw<RSIImpl> {
     }
 
     @Override
-    public float getMaxValue(RSIImpl point) {
+    public float getMaxValue(IRSI point) {
         return Math.max(point.getRsi1(), Math.max(point.getRsi2(), point.getRsi3()));
     }
 
     @Override
-    public float getMinValue(RSIImpl point) {
+    public float getMinValue(IRSI point) {
         return Math.min(point.getRsi1(), Math.min(point.getRsi2(), point.getRsi3()));
     }
 

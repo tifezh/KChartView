@@ -9,7 +9,7 @@ import android.support.v4.content.ContextCompat;
 
 import com.github.tifezh.kchartlib.R;
 import com.github.tifezh.kchartlib.chart.BaseKChartView;
-import com.github.tifezh.kchartlib.chart.EntityImpl.MACDImpl;
+import com.github.tifezh.kchartlib.chart.entity.IMACD;
 import com.github.tifezh.kchartlib.chart.base.IChartDraw;
 import com.github.tifezh.kchartlib.chart.base.IValueFormatter;
 import com.github.tifezh.kchartlib.chart.formatter.ValueFormatter;
@@ -19,7 +19,7 @@ import com.github.tifezh.kchartlib.chart.formatter.ValueFormatter;
  * Created by tifezh on 2016/6/19.
  */
 
-public class MACDDraw implements IChartDraw<MACDImpl> {
+public class MACDDraw implements IChartDraw<IMACD> {
 
     private Paint mRedPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mGreenPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -36,7 +36,7 @@ public class MACDDraw implements IChartDraw<MACDImpl> {
     }
 
     @Override
-    public void drawTranslated(@Nullable MACDImpl lastPoint, @NonNull MACDImpl curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull BaseKChartView view, int position) {
+    public void drawTranslated(@Nullable IMACD lastPoint, @NonNull IMACD curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull BaseKChartView view, int position) {
         drawMACD(canvas, view, curX, curPoint.getMacd());
         view.drawChildLine(canvas, mDIFPaint, lastX, lastPoint.getDea(), curX, curPoint.getDea());
         view.drawChildLine(canvas, mDEAPaint, lastX, lastPoint.getDif(), curX, curPoint.getDif());
@@ -45,7 +45,7 @@ public class MACDDraw implements IChartDraw<MACDImpl> {
     @Override
     public void drawText(@NonNull Canvas canvas, @NonNull BaseKChartView view, int position, float x, float y) {
         String text = "";
-        MACDImpl point = (MACDImpl) view.getItem(position);
+        IMACD point = (IMACD) view.getItem(position);
         text = "DIF:" + view.formatValue(point.getDif()) + " ";
         canvas.drawText(text, x, y, mDEAPaint);
         x += mDIFPaint.measureText(text);
@@ -57,12 +57,12 @@ public class MACDDraw implements IChartDraw<MACDImpl> {
     }
 
     @Override
-    public float getMaxValue(MACDImpl point) {
+    public float getMaxValue(IMACD point) {
         return Math.max(point.getMacd(), Math.max(point.getDea(), point.getDif()));
     }
 
     @Override
-    public float getMinValue(MACDImpl point) {
+    public float getMinValue(IMACD point) {
         return Math.min(point.getMacd(), Math.min(point.getDea(), point.getDif()));
     }
 

@@ -14,7 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.github.tifezh.kchartlib.R;
-import com.github.tifezh.kchartlib.chart.EntityImpl.MinuteLineImpl;
+import com.github.tifezh.kchartlib.chart.entity.IMinuteLine;
 import com.github.tifezh.kchartlib.chart.base.IValueFormatter;
 import com.github.tifezh.kchartlib.chart.formatter.BigValueFormatter;
 import com.github.tifezh.kchartlib.utils.DateUtil;
@@ -57,7 +57,7 @@ public class MinuteChartView extends View implements GestureDetector.OnGestureLi
     private boolean isLongPress = false;
     private int selectedIndex;
     private GestureDetectorCompat mDetector;
-    private final List<MinuteLineImpl> mPoints = new ArrayList<>();
+    private final List<IMinuteLine> mPoints = new ArrayList<>();
     private Date mFirstStartTime;
     private Date mFirstEndTime;
     private Date mSecondStartTime;
@@ -184,7 +184,7 @@ public class MinuteChartView extends View implements GestureDetector.OnGestureLi
      * @param endTime         显示的结束时间
      * @param yesClosePrice 昨日开盘价
      */
-    public void initData(Collection<? extends MinuteLineImpl> data,
+    public void initData(Collection<? extends IMinuteLine> data,
                          Date startTime,
                          Date endTime,
                          float yesClosePrice) {
@@ -199,7 +199,7 @@ public class MinuteChartView extends View implements GestureDetector.OnGestureLi
      * @param secondStartTime 休息结束时间 可空
      * @param yesClosePrice 昨收价
      */
-    public void initData(Collection<? extends MinuteLineImpl> data,
+    public void initData(Collection<? extends IMinuteLine> data,
                          @NonNull Date startTime,
                          @NonNull Date endTime,
                          @Nullable Date firstEndTime,
@@ -235,7 +235,7 @@ public class MinuteChartView extends View implements GestureDetector.OnGestureLi
         mValueMax = Float.MIN_VALUE;
         mValueMin = Float.MAX_VALUE;
         for (int i = 0; i < mPoints.size(); i++) {
-            MinuteLineImpl point = mPoints.get(i);
+            IMinuteLine point = mPoints.get(i);
             mValueMax=Math.max(mValueMax,point.getPrice());
             mValueMin=Math.min(mValueMin,point.getPrice());
             mVolumeMax=Math.max(mVolumeMax,point.getVolume());
@@ -282,10 +282,10 @@ public class MinuteChartView extends View implements GestureDetector.OnGestureLi
         }
         drawGird(canvas);
         if (mPoints.size() > 0) {
-            MinuteLineImpl lastPoint = mPoints.get(0);
+            IMinuteLine lastPoint = mPoints.get(0);
             float lastX=getX(0);
             for (int i = 0; i < mPoints.size(); i++) {
-                MinuteLineImpl curPoint=mPoints.get(i);
+                IMinuteLine curPoint=mPoints.get(i);
                 float curX=getX(i);
                 canvas.drawLine(lastX, getY(lastPoint.getPrice()), curX, getY(curPoint.getPrice()), mPricePaint);
                 canvas.drawLine(lastX, getY(lastPoint.getAvgPrice()),curX, getY(curPoint.getAvgPrice()), mAvgPaint);
@@ -299,7 +299,7 @@ public class MinuteChartView extends View implements GestureDetector.OnGestureLi
         drawText(canvas);
         //画指示线
         if (isLongPress) {
-            MinuteLineImpl point = mPoints.get(selectedIndex);
+            IMinuteLine point = mPoints.get(selectedIndex);
             float x=getX(selectedIndex);
             canvas.drawLine(x, 0, x, mHeight+mVolumeHeight, mTextPaint);
             canvas.drawLine(0, getY(point.getPrice()), mWidth, getY(point.getPrice()), mTextPaint);
@@ -342,7 +342,7 @@ public class MinuteChartView extends View implements GestureDetector.OnGestureLi
         float baseLine = (textHeight - fm.bottom - fm.top) / 2;
         if (index >= 0 && index < mPoints.size()) {
             float y = baseLine-textHeight;
-            MinuteLineImpl point = mPoints.get(index);
+            IMinuteLine point = mPoints.get(index);
             String text = "成交价:" + floatToString(point.getPrice()) + " ";
             float x = 0;
             canvas.drawText(text, x, y, mPricePaint);
@@ -494,7 +494,7 @@ public class MinuteChartView extends View implements GestureDetector.OnGestureLi
      * 修改某个点的值
      * @param position 索引值
      */
-    public void changePoint(int position,MinuteLineImpl point)
+    public void changePoint(int position,IMinuteLine point)
     {
         mPoints.set(position,point);
         notifyChanged();
@@ -511,14 +511,14 @@ public class MinuteChartView extends View implements GestureDetector.OnGestureLi
     /**
      * 刷新最后一个点
      */
-    public void refreshLastPoint(MinuteLineImpl point) {
+    public void refreshLastPoint(IMinuteLine point) {
        changePoint(getItemSize()-1,point);
     }
 
     /**
      * 添加一个点
      */
-    public void addPoint(MinuteLineImpl point) {
+    public void addPoint(IMinuteLine point) {
         mPoints.add(point);
         notifyChanged();
     }
@@ -526,7 +526,7 @@ public class MinuteChartView extends View implements GestureDetector.OnGestureLi
     /**
      * 根据索引获取点
      */
-    public MinuteLineImpl getItem(int position)
+    public IMinuteLine getItem(int position)
     {
         return mPoints.get(position);
     }

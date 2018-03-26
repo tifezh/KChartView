@@ -1,13 +1,13 @@
-package com.github.tifezh.kchartlib.chart.EntityImpl;
+package com.github.tifezh.kchartlib.chart.entity;
 
-import java.text.ParseException;
 import java.util.Date;
 
 /**
+ * 分时图实体接口
  * Created by tifezh on 2017/7/19.
  */
 
-public interface MinuteLineImpl {
+public interface IMinuteLine {
 
     /**
      * @return 获取均价
@@ -19,7 +19,13 @@ public interface MinuteLineImpl {
      */
     float getPrice();
 
+    /**
+     * 该指标对应的时间
+     */
     Date getDate();
 
-    int getVolume();
+    /**
+     * 成交量
+     */
+    float getVolume();
 }

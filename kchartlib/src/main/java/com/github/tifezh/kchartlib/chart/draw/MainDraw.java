@@ -10,8 +10,8 @@ import android.support.v4.content.ContextCompat;
 
 import com.github.tifezh.kchartlib.R;
 import com.github.tifezh.kchartlib.chart.BaseKChartView;
-import com.github.tifezh.kchartlib.chart.EntityImpl.CandleImpl;
-import com.github.tifezh.kchartlib.chart.EntityImpl.KLineImpl;
+import com.github.tifezh.kchartlib.chart.entity.ICandle;
+import com.github.tifezh.kchartlib.chart.entity.IKLine;
 import com.github.tifezh.kchartlib.chart.base.IChartDraw;
 import com.github.tifezh.kchartlib.chart.base.IValueFormatter;
 import com.github.tifezh.kchartlib.chart.formatter.ValueFormatter;
@@ -25,7 +25,7 @@ import java.util.List;
  * Created by tifezh on 2016/6/14.
  */
 
-public class MainDraw implements IChartDraw<CandleImpl>{
+public class MainDraw implements IChartDraw<ICandle>{
 
     private float mCandleWidth = 0;
     private float mCandleLineWidth = 0;
@@ -49,7 +49,7 @@ public class MainDraw implements IChartDraw<CandleImpl>{
     }
 
     @Override
-    public void drawTranslated(@Nullable CandleImpl lastPoint, @NonNull CandleImpl curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull BaseKChartView view, int position) {
+    public void drawTranslated(@Nullable ICandle lastPoint, @NonNull ICandle curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull BaseKChartView view, int position) {
         drawCandle(view, canvas, curX, curPoint.getHighPrice(), curPoint.getLowPrice(), curPoint.getOpenPrice(), curPoint.getClosePrice());
         //画ma5
         if (lastPoint.getMA5Price() != 0) {
@@ -67,7 +67,7 @@ public class MainDraw implements IChartDraw<CandleImpl>{
 
     @Override
     public void drawText(@NonNull Canvas canvas, @NonNull BaseKChartView view, int position, float x, float y) {
-        CandleImpl point = (KLineImpl) view.getItem(position);
+        ICandle point = (IKLine) view.getItem(position);
         String text = "MA5:" + view.formatValue(point.getMA5Price()) + " ";
         canvas.drawText(text, x, y, ma5Paint);
         x += ma5Paint.measureText(text);
@@ -82,12 +82,12 @@ public class MainDraw implements IChartDraw<CandleImpl>{
     }
 
     @Override
-    public float getMaxValue(CandleImpl point) {
+    public float getMaxValue(ICandle point) {
         return Math.max(point.getHighPrice(), point.getMA20Price());
     }
 
     @Override
-    public float getMinValue(CandleImpl point) {
+    public float getMinValue(ICandle point) {
         return Math.min(point.getMA20Price(), point.getLowPrice());
     }
 
@@ -155,7 +155,7 @@ public class MainDraw implements IChartDraw<CandleImpl>{
         float top = margin+view.getTopPadding();
         float height = padding * 8 + textHeight * 5;
 
-        CandleImpl point = (CandleImpl) view.getItem(index);
+        ICandle point = (ICandle) view.getItem(index);
         List<String> strings = new ArrayList<>();
         strings.add(view.formatDateTime(view.getAdapter().getDate(index)));
         strings.add("高:" + point.getHighPrice());

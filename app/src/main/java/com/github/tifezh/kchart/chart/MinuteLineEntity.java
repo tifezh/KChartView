@@ -1,6 +1,6 @@
 package com.github.tifezh.kchart.chart;
 
-import com.github.tifezh.kchartlib.chart.EntityImpl.MinuteLineImpl;
+import com.github.tifezh.kchartlib.chart.entity.IMinuteLine;
 
 import java.util.Date;
 
@@ -9,7 +9,7 @@ import java.util.Date;
  * Created by tifezh on 2017/7/20.
  */
 
-public class MinuteLineEntity implements MinuteLineImpl{
+public class MinuteLineEntity implements IMinuteLine {
     /**
      * time : 09:30
      * price : 3.53
@@ -20,7 +20,7 @@ public class MinuteLineEntity implements MinuteLineImpl{
     public Date time;
     public float price;
     public float avg;
-    public int volume;
+    public float volume;
 
     @Override
     public float getAvgPrice() {
@@ -38,7 +38,7 @@ public class MinuteLineEntity implements MinuteLineImpl{
     }
 
     @Override
-    public int getVolume() {
+    public float getVolume() {
         return volume;
     }
 
