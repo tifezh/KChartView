@@ -21,7 +21,7 @@ KChart for Android ；股票k线图
 <com.github.tifezh.kchartlib.chart.KChartView
         android:id="@+id/kchart_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="match_parent">
     </com.github.tifezh.kchartlib.chart.KChartView>
 ```
 
@@ -32,7 +32,7 @@ KChart for Android ；股票k线图
 <com.github.tifezh.kchartlib.chart.KChartView
         android:id="@+id/kchart_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="match_parent"
         app:kc_text_size="@dimen/chart_text_size"
         app:kc_text_color="#787878"
         app:kc_line_width="@dimen/chart_line_width"
@@ -275,7 +275,7 @@ new Thread(new Runnable() {
 public interface KDJImpl {
     public float getK();
     public float getD();
-    public float getJ()；
+    public float getJ();
 }
 ```
 * 实现IChartDraw接口
@@ -393,3 +393,19 @@ private void drawMACD(Canvas canvas, BaseKChartView view, float x, float macd) {
 }
 ```
 
+License
+-------
+
+    Copyright 2018 tifezh
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
