@@ -15,7 +15,8 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
-import butterknife.Bind;
+
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -25,7 +26,7 @@ import butterknife.ButterKnife;
 public class MinuteChartActivity extends AppCompatActivity {
 
 
-    @Bind(R.id.minuteChartView)
+    @BindView(R.id.minuteChartView)
     MinuteChartView mMinuteChartView;
 
     @Override
