@@ -245,12 +245,26 @@ public class MinuteChartView extends View implements GestureDetector.OnGestureLi
         float offsetValueMin = mValueStart - mValueMin;
         //以开始的点为中点值   上下间隙多出20%
         float offset = (offsetValueMax > offsetValueMin ? offsetValueMax : offsetValueMin) * 1.2f;
-        mVolumeMax*=1.1f;
         //坐标轴高度以开始的点对称
         mValueMax = mValueStart + offset;
         mValueMin = mValueStart - offset;
         //y轴的缩放值
         mScaleY = mHeight / (mValueMax - mValueMin);
+        //判断最大值和最小值是否一致
+        if(mValueMax == mValueMin){
+            //当最大值和最小值都相等的时候 分别增大最大值和 减小最小值
+            mValueMax += Math.abs(mValueMax*0.05f);
+            mValueMin -= Math.abs(mValueMax*0.05f);
+            if (mValueMax == 0) {
+                mValueMax = 1;
+            }
+        }
+
+        if(mVolumeMax == 0){
+            mVolumeMax=1;
+        }
+
+        mVolumeMax*=1.1f;
         //成交量的缩放值
         mVolumeScaleY = mVolumeHeight / mVolumeMax;
         mPointWidth=(float) mWidth/getMaxPointCount();

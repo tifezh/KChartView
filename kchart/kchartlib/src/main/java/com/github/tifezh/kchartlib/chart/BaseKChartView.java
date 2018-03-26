@@ -452,9 +452,28 @@ public abstract class BaseKChartView extends ScrollAndScaleView {
                 mChildMinValue = Math.min(mChildMinValue, mChildDraw.getMinValue(point));
             }
         }
-        float padding = (mMainMaxValue - mMainMinValue) * 0.05f;
-        mMainMaxValue += padding;
-        mMainMinValue -= padding;
+        if(mMainMaxValue!=mMainMinValue) {
+            float padding = (mMainMaxValue - mMainMinValue) * 0.05f;
+            mMainMaxValue += padding;
+            mMainMinValue -= padding;
+        } else {
+            //当最大值和最小值都相等的时候 分别增大最大值和 减小最小值
+            mMainMaxValue += Math.abs(mMainMaxValue*0.05f);
+            mMainMinValue -= Math.abs(mMainMinValue*0.05f);
+            if (mMainMaxValue == 0) {
+                mMainMaxValue = 1;
+            }
+        }
+
+        if (mChildMaxValue == mChildMinValue) {
+            //当最大值和最小值都相等的时候 分别增大最大值和 减小最小值
+            mChildMaxValue += Math.abs(mChildMaxValue*0.05f);
+            mChildMinValue -= Math.abs(mChildMinValue*0.05f);
+            if (mChildMaxValue == 0) {
+                mChildMaxValue = 1;
+            }
+        }
+
         mMainScaleY = mMainRect.height() * 1f / (mMainMaxValue - mMainMinValue);
         mChildScaleY = mChildRect.height() * 1f / (mChildMaxValue - mChildMinValue);
         if (mAnimator.isRunning()) {
