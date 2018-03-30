@@ -14,13 +14,13 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.github.tifezh.kchartlib.R;
-import com.github.tifezh.kchartlib.chart.entity.IKLine;
-import com.github.tifezh.kchartlib.chart.formatter.TimeFormatter;
-import com.github.tifezh.kchartlib.chart.formatter.ValueFormatter;
 import com.github.tifezh.kchartlib.chart.base.IAdapter;
 import com.github.tifezh.kchartlib.chart.base.IChartDraw;
 import com.github.tifezh.kchartlib.chart.base.IDateTimeFormatter;
 import com.github.tifezh.kchartlib.chart.base.IValueFormatter;
+import com.github.tifezh.kchartlib.chart.entity.IKLine;
+import com.github.tifezh.kchartlib.chart.formatter.TimeFormatter;
+import com.github.tifezh.kchartlib.chart.formatter.ValueFormatter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -938,5 +938,19 @@ public abstract class BaseKChartView extends ScrollAndScaleView {
 
     public Paint getSelectedLinePaint() {
         return mSelectedLinePaint;
+    }
+
+    /**
+     * 绘制区域显示的开始索引值
+     */
+    public int getStartIndex() {
+        return mStartIndex;
+    }
+
+    /**
+     * 绘制区域显示的结束索引值
+     */
+    public int getStopIndex() {
+        return mStopIndex;
     }
 }
