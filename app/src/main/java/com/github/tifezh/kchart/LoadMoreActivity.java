@@ -103,7 +103,7 @@ public class LoadMoreActivity extends AppCompatActivity implements KChartView.KC
                         if (mAdapter.getCount() == 0) {
                             mKChartView.startAnimation();
                         }
-                        mAdapter.addFooterData(data);
+                        mAdapter.addData(data);
                         //加载完成，还有更多数据
                         if (data.size() > 0) {
                             mKChartView.refreshComplete();

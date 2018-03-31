@@ -11,28 +11,12 @@ import java.util.List;
  * Created by tifezh on 2016/6/18.
  */
 
-public class KChartAdapter extends BaseKChartAdapter {
-
-    private List<KLineEntity> datas = new ArrayList<>();
-
-    public KChartAdapter() {
-
-    }
-
-    @Override
-    public int getCount() {
-        return datas.size();
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return datas.get(position);
-    }
+public class KChartAdapter extends BaseKChartAdapter<KLineEntity> {
 
     @Override
     public Date getDate(int position) {
         try {
-            String s = datas.get(position).Date;
+            String s = getItem(position).Date;
             String[] split = s.split("/");
             Date date = new Date();
             date.setYear(Integer.parseInt(split[0]) - 1900);
@@ -43,36 +27,6 @@ public class KChartAdapter extends BaseKChartAdapter {
             e.printStackTrace();
         }
         return null;
-    }
-
-    /**
-     * 向头部添加数据
-     */
-    public void addHeaderData(List<KLineEntity> data) {
-        if (data != null && !data.isEmpty()) {
-            datas.addAll(data);
-            notifyDataSetChanged();
-        }
-    }
-
-    /**
-     * 向尾部添加数据
-     */
-    public void addFooterData(List<KLineEntity> data) {
-        if (data != null && !data.isEmpty()) {
-            datas.addAll(0, data);
-            notifyDataSetChanged();
-        }
-    }
-
-    /**
-     * 改变某个点的值
-     * @param position 索引值
-     */
-    public void changeItem(int position,KLineEntity data)
-    {
-        datas.set(position,data);
-        notifyDataSetChanged();
     }
 
 }

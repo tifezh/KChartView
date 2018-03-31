@@ -82,7 +82,7 @@ public class ExampleActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mAdapter.addFooterData(data);
+                        mAdapter.setNewData(data);
                         mKChartView.startAnimation();
                         mKChartView.refreshEnd();
                     }
