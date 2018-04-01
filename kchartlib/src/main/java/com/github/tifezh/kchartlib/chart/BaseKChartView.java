@@ -41,19 +41,7 @@ public abstract class BaseKChartView extends ScrollAndScaleView {
 
     private int mBottomPadding;
 
-    private float mMainScaleY = 1;
-
-    private float mChildScaleY = 1;
-
     private float mDataLen = 0;
-
-    private float mMainMaxValue = Float.MAX_VALUE;
-
-    private float mMainMinValue = Float.MIN_VALUE;
-
-    private float mChildMaxValue = Float.MAX_VALUE;
-
-    private float mChildMinValue = Float.MIN_VALUE;
 
     private int mStartIndex = 0;
 
@@ -110,11 +98,11 @@ public abstract class BaseKChartView extends ScrollAndScaleView {
 
     private OnSelectedChangedListener mOnSelectedChangedListener = null;
 
-    private Rect mMainRect;
+    protected final Rect mMainRect=new Rect();
 
-    private Rect mTabRect;
+    private final Rect mTabRect=new Rect();
 
-    private Rect mChildRect;
+    protected final Rect mChildRect=new Rect();
 
     private float mLineWidth;
 
@@ -175,9 +163,9 @@ public abstract class BaseKChartView extends ScrollAndScaleView {
         int displayHeight = h - mTopPadding - mBottomPadding - mMainChildSpace;
         int mMainHeight = (int) (displayHeight * 0.75f);
         int mChildHeight = (int) (displayHeight * 0.25f);
-        mMainRect=new Rect(0,mTopPadding,mWidth,mTopPadding+mMainHeight);
-        mTabRect=new Rect(0,mMainRect.bottom,mWidth,mMainRect.bottom+mMainChildSpace);
-        mChildRect=new Rect(0,mTabRect.bottom,mWidth,mTabRect.bottom+mChildHeight);
+        mMainRect.set(0,mTopPadding,mWidth,mTopPadding+mMainHeight);
+        mTabRect.set(0,mMainRect.bottom,mWidth,mMainRect.bottom+mMainChildSpace);
+        mChildRect.set(0,mTabRect.bottom,mWidth,mTabRect.bottom+mChildHeight);
     }
 
     @Override
@@ -188,21 +176,11 @@ public abstract class BaseKChartView extends ScrollAndScaleView {
             return;
         }
         calculateValue();
-        canvas.save();
-        canvas.scale(1, 1);
         drawGird(canvas);
         drawK(canvas);
         drawText(canvas);
-        drawValue(canvas, isLongPress ? mSelectedIndex : mStopIndex);
-        canvas.restore();
-    }
-
-    public float getMainY(float value) {
-        return (mMainMaxValue - value) * mMainScaleY+mMainRect.top;
-    }
-
-    public float getChildY(float value) {
-        return (mChildMaxValue - value) * mChildScaleY + mChildRect.top;
+        mMainDraw.draw(canvas);
+        mChildDraw.draw(canvas);
     }
 
     /**
@@ -241,28 +219,15 @@ public abstract class BaseKChartView extends ScrollAndScaleView {
      * @param canvas
      */
     private void drawK(Canvas canvas) {
-        //保存之前的平移，缩放
+        //保存之前的平移，缩放ƒ
         canvas.save();
         canvas.translate(mTranslateX * mScaleX, 0);
         canvas.scale(mScaleX, 1);
-        for (int i = mStartIndex; i <= mStopIndex; i++) {
-            Object currentPoint = getItem(i);
-            float currentPointX = getX(i);
-            Object lastPoint = i == 0 ? currentPoint : getItem(i - 1);
-            float lastX = i == 0 ? currentPointX : getX(i - 1);
-            if (mMainDraw != null) {
-                mMainDraw.drawTranslated(lastPoint, currentPoint, lastX, currentPointX, canvas, this, i);
-            }
-            if (mChildDraw != null) {
-                mChildDraw.drawTranslated(lastPoint, currentPoint, lastX, currentPointX, canvas, this, i);
-            }
-
-        }
         //画选择线
         if (isLongPress) {
             IKLine point = (IKLine) getItem(mSelectedIndex);
             float x = getX(mSelectedIndex);
-            float y = getMainY(point.getClosePrice());
+            float y = mMainDraw.getY(point.getClosePrice());
             canvas.drawLine(x, mMainRect.top, x, mMainRect.bottom, mSelectedLinePaint);
             canvas.drawLine(-mTranslateX, y, -mTranslateX + mWidth / mScaleX, y, mSelectedLinePaint);
             canvas.drawLine(x,mChildRect.top, x,mChildRect.bottom, mSelectedLinePaint);
@@ -281,20 +246,22 @@ public abstract class BaseKChartView extends ScrollAndScaleView {
         float baseLine = (textHeight - fm.bottom - fm.top) / 2;
         //--------------画上方k线图的值-------------
         if (mMainDraw != null) {
-            canvas.drawText(formatValue(mMainMaxValue), 0, baseLine+mMainRect.top, mTextPaint);
-            canvas.drawText(formatValue(mMainMinValue), 0, mMainRect.bottom-textHeight+baseLine, mTextPaint);
-            float rowValue = (mMainMaxValue - mMainMinValue) / mGridRows;
+            canvas.drawText(formatValue(mMainDraw.getMaxValue()), 0, baseLine+mMainRect.top, mTextPaint);
+            canvas.drawText(formatValue(mMainDraw.getMinValue()), 0, mMainRect.bottom-textHeight+baseLine, mTextPaint);
+            float rowValue = (mMainDraw.getMaxValue() - mMainDraw.getMinValue()) / mGridRows;
             float rowSpace = mMainRect.height() / mGridRows;
             for (int i = 1; i < mGridRows; i++) {
-                String text = formatValue(rowValue * (mGridRows - i) + mMainMinValue);
+                String text = formatValue(rowValue * (mGridRows - i) + mMainDraw.getMinValue());
                 canvas.drawText(text, 0, fixTextY(rowSpace * i+mMainRect.top), mTextPaint);
             }
         }
+
         //--------------画下方子图的值-------------
         if (mChildDraw != null) {
-            canvas.drawText(mChildDraw.getValueFormatter().format(mChildMaxValue), 0, mChildRect.top+ baseLine, mTextPaint);
-            canvas.drawText(mChildDraw.getValueFormatter().format(mChildMinValue), 0, mChildRect.bottom, mTextPaint);
+            canvas.drawText(mChildDraw.getValueFormatter().format(mChildDraw.getMaxValue()), 0, mChildRect.top+ baseLine, mTextPaint);
+            canvas.drawText(mChildDraw.getValueFormatter().format(mChildDraw.getMinValue()), 0, mChildRect.bottom, mTextPaint);
         }
+
         //--------------画时间---------------------
         float columnSpace = mWidth / mGridColumns;
         float y = mChildRect.bottom + baseLine;
@@ -324,7 +291,7 @@ public abstract class BaseKChartView extends ScrollAndScaleView {
             IKLine point = (IKLine) getItem(mSelectedIndex);
             String text = formatValue(point.getClosePrice());
             float r = textHeight / 2;
-            y = getMainY(point.getClosePrice());
+            y = mMainDraw.getY(point.getClosePrice());
             float x;
             if (translateXtoX(getX(mSelectedIndex)) < getChartWidth() / 2) {
                 x = 0;
@@ -334,29 +301,6 @@ public abstract class BaseKChartView extends ScrollAndScaleView {
                 canvas.drawRect(x, y - r, mWidth, y + r, mBackgroundPaint);
             }
             canvas.drawText(text, x, fixTextY(y), mTextPaint);
-        }
-    }
-
-    /**
-     * 画值
-     * @param canvas
-     * @param position 显示某个点的值
-     */
-    private void drawValue(Canvas canvas, int position) {
-        Paint.FontMetrics fm = mTextPaint.getFontMetrics();
-        float textHeight = fm.descent - fm.ascent;
-        float baseLine = (textHeight - fm.bottom - fm.top) / 2;
-        if (position >= 0 && position < mItemCount) {
-            if (mMainDraw != null) {
-                float y =mMainRect.top+baseLine-textHeight;
-                float x = 0;
-                mMainDraw.drawText(canvas, this, position, x, y);
-            }
-            if (mChildDraw != null) {
-                float y = mChildRect.top + baseLine;
-                float x = mTextPaint.measureText(mChildDraw.getValueFormatter().format(mChildMaxValue) + " ");
-                mChildDraw.drawText(canvas, this, position, x, y);
-            }
         }
     }
 
@@ -435,47 +379,12 @@ public abstract class BaseKChartView extends ScrollAndScaleView {
         if (!isLongPress()) {
             mSelectedIndex = -1;
         }
-        mMainMaxValue = Float.MIN_VALUE;
-        mMainMinValue = Float.MAX_VALUE;
-        mChildMaxValue = Float.MIN_VALUE;
-        mChildMinValue = Float.MAX_VALUE;
         mStartIndex = indexOfTranslateX(xToTranslateX(0));
         mStopIndex = indexOfTranslateX(xToTranslateX(mWidth));
-        for (int i = mStartIndex; i <= mStopIndex; i++) {
-            IKLine point = (IKLine) getItem(i);
-            if (mMainDraw != null) {
-                mMainMaxValue = Math.max(mMainMaxValue, mMainDraw.getMaxValue(point));
-                mMainMinValue = Math.min(mMainMinValue, mMainDraw.getMinValue(point));
-            }
-            if (mChildDraw != null) {
-                mChildMaxValue = Math.max(mChildMaxValue, mChildDraw.getMaxValue(point));
-                mChildMinValue = Math.min(mChildMinValue, mChildDraw.getMinValue(point));
-            }
-        }
-        if(mMainMaxValue!=mMainMinValue) {
-            float padding = (mMainMaxValue - mMainMinValue) * 0.05f;
-            mMainMaxValue += padding;
-            mMainMinValue -= padding;
-        } else {
-            //当最大值和最小值都相等的时候 分别增大最大值和 减小最小值
-            mMainMaxValue += Math.abs(mMainMaxValue*0.05f);
-            mMainMinValue -= Math.abs(mMainMinValue*0.05f);
-            if (mMainMaxValue == 0) {
-                mMainMaxValue = 1;
-            }
-        }
 
-        if (mChildMaxValue == mChildMinValue) {
-            //当最大值和最小值都相等的时候 分别增大最大值和 减小最小值
-            mChildMaxValue += Math.abs(mChildMaxValue*0.05f);
-            mChildMinValue -= Math.abs(mChildMinValue*0.05f);
-            if (mChildMaxValue == 0) {
-                mChildMaxValue = 1;
-            }
-        }
+        mMainDraw.calculate(mStartIndex,mStopIndex);
+        mChildDraw.calculate(mStartIndex,mStopIndex);
 
-        mMainScaleY = mMainRect.height() * 1f / (mMainMaxValue - mMainMinValue);
-        mChildScaleY = mChildRect.height() * 1f / (mChildMaxValue - mChildMinValue);
         if (mAnimator.isRunning()) {
             float value = (float) mAnimator.getAnimatedValue();
             mStopIndex = mStartIndex + Math.round(value * (mStopIndex - mStartIndex));
@@ -515,28 +424,6 @@ public abstract class BaseKChartView extends ScrollAndScaleView {
     }
 
     /**
-     * 在主区域画线
-     * @param startX    开始点的横坐标
-     * @param stopX     开始点的值
-     * @param stopX     结束点的横坐标
-     * @param stopValue 结束点的值
-     */
-    public void drawMainLine(Canvas canvas, Paint paint, float startX, float startValue, float stopX, float stopValue) {
-        canvas.drawLine(startX, getMainY(startValue), stopX, getMainY(stopValue), paint);
-    }
-
-    /**
-     * 在子区域画线
-     * @param startX     开始点的横坐标
-     * @param startValue 开始点的值
-     * @param stopX      结束点的横坐标
-     * @param stopValue  结束点的值
-     */
-    public void drawChildLine(Canvas canvas, Paint paint, float startX, float startValue, float stopX, float stopValue) {
-        canvas.drawLine(startX, getChildY(startValue), stopX, getChildY(stopValue), paint);
-    }
-
-    /**
      * 根据索引获取实体
      * @param position 索引值
      * @return
@@ -552,7 +439,6 @@ public abstract class BaseKChartView extends ScrollAndScaleView {
     /**
      * 根据索引索取x坐标
      * @param position 索引值
-     * @return
      */
     public float getX(int position) {
         return position * mPointWidth;
@@ -953,4 +839,14 @@ public abstract class BaseKChartView extends ScrollAndScaleView {
     public int getStopIndex() {
         return mStopIndex;
     }
+
+    public float getTranslateX() {
+        return mTranslateX;
+    }
+
+    public float translateX(){
+        return mScaleX*mTranslateX;
+    }
+
+
 }

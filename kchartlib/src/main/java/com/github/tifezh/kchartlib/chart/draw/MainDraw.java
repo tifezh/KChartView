@@ -3,18 +3,22 @@ package com.github.tifezh.kchartlib.chart.draw;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.util.Pair;
 
 import com.github.tifezh.kchartlib.R;
+import com.github.tifezh.kchartlib.chart.BaseChartDraw;
 import com.github.tifezh.kchartlib.chart.BaseKChartView;
 import com.github.tifezh.kchartlib.chart.entity.ICandle;
 import com.github.tifezh.kchartlib.chart.entity.IKLine;
 import com.github.tifezh.kchartlib.chart.base.IChartDraw;
 import com.github.tifezh.kchartlib.chart.base.IValueFormatter;
 import com.github.tifezh.kchartlib.chart.formatter.ValueFormatter;
+import com.github.tifezh.kchartlib.utils.CanvasUtils;
 import com.github.tifezh.kchartlib.utils.ViewUtil;
 
 import java.util.ArrayList;
@@ -25,7 +29,7 @@ import java.util.List;
  * Created by tifezh on 2016/6/14.
  */
 
-public class MainDraw implements IChartDraw<ICandle>{
+public class MainDraw extends BaseChartDraw<ICandle> {
 
     private float mCandleWidth = 0;
     private float mCandleLineWidth = 0;
@@ -41,43 +45,50 @@ public class MainDraw implements IChartDraw<ICandle>{
 
     private boolean mCandleSolid=true;
 
-    public MainDraw(BaseKChartView view) {
-        Context context=view.getContext();
+    /**
+     * 构造方法
+     *
+     * @param rect       显示区域
+     * @param KChartView {@link BaseKChartView}
+     */
+    public MainDraw(Rect rect, BaseKChartView KChartView) {
+        super(rect, KChartView);
+        Context context=mKChartView.getContext();
         mContext=context;
         mRedPaint.setColor(ContextCompat.getColor(context,R.color.chart_red));
         mGreenPaint.setColor(ContextCompat.getColor(context,R.color.chart_green));
     }
 
     @Override
-    public void drawTranslated(@Nullable ICandle lastPoint, @NonNull ICandle curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull BaseKChartView view, int position) {
-        drawCandle(view, canvas, curX, curPoint.getHighPrice(), curPoint.getLowPrice(), curPoint.getOpenPrice(), curPoint.getClosePrice());
+    protected void foreachDrawChart(Canvas canvas, int i, ICandle curPoint, ICandle lastPoint) {
+        drawCandle(canvas, getX(i), curPoint.getHighPrice(), curPoint.getLowPrice(), curPoint.getOpenPrice(), curPoint.getClosePrice());
         //画ma5
         if (lastPoint.getMA5Price() != 0) {
-            view.drawMainLine(canvas, ma5Paint, lastX, lastPoint.getMA5Price(), curX, curPoint.getMA5Price());
+            drawLine(canvas, ma5Paint, i, curPoint.getMA5Price(), lastPoint.getMA5Price());
         }
         //画ma10
         if (lastPoint.getMA10Price() != 0) {
-            view.drawMainLine(canvas, ma10Paint, lastX, lastPoint.getMA10Price(), curX, curPoint.getMA10Price());
+            drawLine(canvas, ma10Paint, i, curPoint.getMA10Price(), lastPoint.getMA10Price());
         }
         //画ma20
         if (lastPoint.getMA20Price() != 0) {
-            view.drawMainLine(canvas, ma20Paint, lastX, lastPoint.getMA20Price(), curX, curPoint.getMA20Price());
+            drawLine(canvas, ma20Paint, i, curPoint.getMA20Price(), lastPoint.getMA20Price());
         }
     }
 
     @Override
-    public void drawText(@NonNull Canvas canvas, @NonNull BaseKChartView view, int position, float x, float y) {
-        ICandle point = (IKLine) view.getItem(position);
-        String text = "MA5:" + view.formatValue(point.getMA5Price()) + " ";
-        canvas.drawText(text, x, y, ma5Paint);
-        x += ma5Paint.measureText(text);
-        text = "MA10:" + view.formatValue(point.getMA10Price()) + " ";
-        canvas.drawText(text, x, y, ma10Paint);
-        x += ma10Paint.measureText(text);
-        text = "MA20:" + view.formatValue(point.getMA20Price()) + " ";
-        canvas.drawText(text, x, y, ma20Paint);
-        if (view.isLongPress()) {
-            drawSelector(view, canvas);
+    public void drawValues(@NonNull Canvas canvas, int start, int stop) {
+        int x=0;
+        int y=0;
+        ICandle point = (IKLine) mKChartView.getItem(mKChartView.isLongPress()?mKChartView.getSelectedIndex():mKChartView.getStopIndex());
+
+        CanvasUtils.drawTexts(canvas,x,y, CanvasUtils.XAlign.LEFT, CanvasUtils.YAlign.BOTTOM,
+                new Pair<>(ma5Paint,"MA5:" + mKChartView.formatValue(point.getMA5Price()) + " "),
+                new Pair<>(ma10Paint,"MA10:" + mKChartView.formatValue(point.getMA10Price()) + " "),
+                new Pair<>(ma20Paint,"MA20:" + mKChartView.formatValue(point.getMA20Price()) + " "));
+
+        if (mKChartView.isLongPress()) {
+            drawSelector(mKChartView, canvas);
         }
     }
 
@@ -91,7 +102,6 @@ public class MainDraw implements IChartDraw<ICandle>{
         return Math.min(point.getMA20Price(), point.getLowPrice());
     }
 
-    @Override
     public IValueFormatter getValueFormatter() {
         return new ValueFormatter();
     }
@@ -105,11 +115,11 @@ public class MainDraw implements IChartDraw<ICandle>{
      * @param open   开盘价
      * @param close  收盘价
      */
-    private void drawCandle(BaseKChartView view, Canvas canvas, float x, float high, float low, float open, float close) {
-        high = view.getMainY(high);
-        low = view.getMainY(low);
-        open = view.getMainY(open);
-        close = view.getMainY(close);
+    private void drawCandle(Canvas canvas, float x, float high, float low, float open, float close) {
+        high = getY(high);
+        low = getY(low);
+        open = getY(open);
+        close = getY(close);
         float r = mCandleWidth / 2;
         float lineR = mCandleLineWidth / 2;
         if (open > close) {
@@ -124,7 +134,7 @@ public class MainDraw implements IChartDraw<ICandle>{
                 canvas.drawLine(x, open, x, low, mRedPaint);
                 canvas.drawLine(x - r + lineR, open, x - r + lineR, close, mRedPaint);
                 canvas.drawLine(x + r - lineR, open, x + r - lineR, close, mRedPaint);
-                mRedPaint.setStrokeWidth(mCandleLineWidth * view.getScaleX());
+                mRedPaint.setStrokeWidth(mCandleLineWidth * mKChartView.getScaleX());
                 canvas.drawLine(x - r, open, x + r, open, mRedPaint);
                 canvas.drawLine(x - r, close, x + r, close, mRedPaint);
             }

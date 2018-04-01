@@ -2,48 +2,52 @@ package com.github.tifezh.kchartlib.chart.draw;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.util.Pair;
 
+import com.github.tifezh.kchartlib.chart.BaseChartDraw;
 import com.github.tifezh.kchartlib.chart.BaseKChartView;
 import com.github.tifezh.kchartlib.chart.entity.IKDJ;
-import com.github.tifezh.kchartlib.chart.base.IChartDraw;
-import com.github.tifezh.kchartlib.chart.base.IValueFormatter;
-import com.github.tifezh.kchartlib.chart.formatter.ValueFormatter;
+import com.github.tifezh.kchartlib.utils.CanvasUtils;
 
 /**
  * KDJ实现类
  * Created by tifezh on 2016/6/19.
  */
 
-public class KDJDraw implements IChartDraw<IKDJ> {
+public class KDJDraw extends BaseChartDraw<IKDJ> {
 
     private Paint mKPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mDPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mJPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-    public KDJDraw(BaseKChartView view) {
+    /**
+     * 构造方法
+     *
+     * @param rect       显示区域
+     * @param KChartView {@link BaseKChartView}
+     */
+    public KDJDraw(Rect rect, BaseKChartView KChartView) {
+        super(rect, KChartView);
+    }
+
+
+    @Override
+    protected void foreachDrawChart(Canvas canvas, int i, IKDJ curPoint, IKDJ lastPoint) {
+        drawLine(canvas, mKPaint, i, curPoint.getK(), lastPoint.getK());
+        drawLine(canvas, mDPaint, i, curPoint.getD(), lastPoint.getD());
+        drawLine(canvas, mJPaint, i, curPoint.getJ(), lastPoint.getJ());
     }
 
     @Override
-    public void drawTranslated(@Nullable IKDJ lastPoint, @NonNull IKDJ curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull BaseKChartView view, int position) {
-        view.drawChildLine(canvas, mKPaint, lastX, lastPoint.getK(), curX, curPoint.getK());
-        view.drawChildLine(canvas, mDPaint, lastX, lastPoint.getD(), curX, curPoint.getD());
-        view.drawChildLine(canvas, mJPaint, lastX, lastPoint.getJ(), curX, curPoint.getJ());
-    }
-
-    @Override
-    public void drawText(@NonNull Canvas canvas, @NonNull BaseKChartView view, int position, float x, float y) {
-        String text = "";
-        IKDJ point = (IKDJ) view.getItem(position);
-        text = "K:" + view.formatValue(point.getK()) + " ";
-        canvas.drawText(text, x, y, mKPaint);
-        x += mKPaint.measureText(text);
-        text = "D:" + view.formatValue(point.getD()) + " ";
-        canvas.drawText(text, x, y, mDPaint);
-        x += mDPaint.measureText(text);
-        text = "J:" + view.formatValue(point.getJ()) + " ";
-        canvas.drawText(text, x, y, mJPaint);
+    public void drawValues(@NonNull Canvas canvas, int start, int stop) {
+        IKDJ point = getDisplayItem();
+        float x = mKChartView.getTextPaint().measureText(getValueFormatter().format(getMaxValue())+" ");
+        CanvasUtils.drawTexts(canvas,x,0, CanvasUtils.XAlign.LEFT, CanvasUtils.YAlign.TOP,
+                new Pair<>(mKPaint,"K:" + mKChartView.formatValue(point.getK()) + " "),
+                new Pair<>(mDPaint,"D:" + mKChartView.formatValue(point.getD()) + " "),
+                new Pair<>(mJPaint,"J:" + mKChartView.formatValue(point.getJ()) + " "));
     }
 
     @Override
@@ -54,11 +58,6 @@ public class KDJDraw implements IChartDraw<IKDJ> {
     @Override
     public float getMinValue(IKDJ point) {
         return Math.min(point.getK(), Math.min(point.getD(), point.getJ()));
-    }
-
-    @Override
-    public IValueFormatter getValueFormatter() {
-        return new ValueFormatter();
     }
 
     /**
@@ -101,4 +100,6 @@ public class KDJDraw implements IChartDraw<IKDJ> {
         mDPaint.setTextSize(textSize);
         mJPaint.setTextSize(textSize);
     }
+
+
 }

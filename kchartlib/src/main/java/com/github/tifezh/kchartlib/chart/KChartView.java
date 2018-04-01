@@ -60,12 +60,12 @@ public class KChartView extends BaseKChartView {
         layoutParams.addRule(CENTER_IN_PARENT);
         addView(mProgressBar,layoutParams);
         mProgressBar.setVisibility(GONE);
-        mVolumeDraw=new VolumeDraw(this);
-        mMACDDraw=new MACDDraw(this);
-        mKDJDraw=new KDJDraw(this);
-        mRSIDraw=new RSIDraw(this);
-        mBOLLDraw=new BOLLDraw(this);
-        mMainDraw=new MainDraw(this);
+        mVolumeDraw=new VolumeDraw(mChildRect,this);
+        mMACDDraw=new MACDDraw(mChildRect,this);
+        mKDJDraw=new KDJDraw(mChildRect,this);
+        mRSIDraw=new RSIDraw(mChildRect,this);
+        mBOLLDraw=new BOLLDraw(mChildRect,this);
+        mMainDraw=new MainDraw(mMainRect,this);
         addChildDraw("VOL",mVolumeDraw);
         addChildDraw("MACD",mMACDDraw);
         addChildDraw("KDJ", mKDJDraw);

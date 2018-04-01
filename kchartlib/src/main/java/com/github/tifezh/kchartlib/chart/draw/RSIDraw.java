@@ -2,49 +2,56 @@ package com.github.tifezh.kchartlib.chart.draw;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Pair;
 
+import com.github.tifezh.kchartlib.chart.BaseChartDraw;
 import com.github.tifezh.kchartlib.chart.BaseKChartView;
+import com.github.tifezh.kchartlib.chart.entity.IMACD;
 import com.github.tifezh.kchartlib.chart.entity.IRSI;
 import com.github.tifezh.kchartlib.chart.base.IChartDraw;
 import com.github.tifezh.kchartlib.chart.base.IValueFormatter;
 import com.github.tifezh.kchartlib.chart.formatter.ValueFormatter;
+import com.github.tifezh.kchartlib.utils.CanvasUtils;
 
 /**
  * RSI实现类
  * Created by tifezh on 2016/6/19.
  */
 
-public class RSIDraw implements IChartDraw<IRSI> {
+public class RSIDraw extends BaseChartDraw<IRSI> {
 
     private Paint mRSI1Paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mRSI2Paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Paint mRSI3Paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-    public RSIDraw(BaseKChartView view) {
-
+    /**
+     * 构造方法
+     *
+     * @param rect       显示区域
+     * @param KChartView {@link BaseKChartView}
+     */
+    public RSIDraw(Rect rect, BaseKChartView KChartView) {
+        super(rect, KChartView);
     }
 
     @Override
-    public void drawTranslated(@Nullable IRSI lastPoint, @NonNull IRSI curPoint, float lastX, float curX, @NonNull Canvas canvas, @NonNull BaseKChartView view, int position) {
-        view.drawChildLine(canvas, mRSI1Paint, lastX, lastPoint.getRsi1(), curX, curPoint.getRsi1());
-        view.drawChildLine(canvas, mRSI2Paint, lastX, lastPoint.getRsi2(), curX, curPoint.getRsi2());
-        view.drawChildLine(canvas, mRSI3Paint, lastX, lastPoint.getRsi3(), curX, curPoint.getRsi3());
+    protected void foreachDrawChart(Canvas canvas, int i, IRSI curPoint, IRSI lastPoint) {
+        drawLine(canvas, mRSI1Paint, i, curPoint.getRsi1(), lastPoint.getRsi1());
+        drawLine(canvas, mRSI2Paint, i, curPoint.getRsi2(), lastPoint.getRsi2());
+        drawLine(canvas, mRSI3Paint, i, curPoint.getRsi3(), lastPoint.getRsi3());
     }
 
     @Override
-    public void drawText(@NonNull Canvas canvas, @NonNull BaseKChartView view, int position, float x, float y) {
-        String text = "";
-        IRSI point = (IRSI) view.getItem(position);
-        text = "RSI1:" + view.formatValue(point.getRsi1()) + " ";
-        canvas.drawText(text, x, y, mRSI1Paint);
-        x += mRSI1Paint.measureText(text);
-        text = "RSI2:" + view.formatValue(point.getRsi2()) + " ";
-        canvas.drawText(text, x, y, mRSI2Paint);
-        x += mRSI2Paint.measureText(text);
-        text = "RSI3:" + view.formatValue(point.getRsi3()) + " ";
-        canvas.drawText(text, x, y, mRSI3Paint);
+    public void drawValues(@NonNull Canvas canvas, int start, int stop) {
+        IRSI point = getDisplayItem();
+        float x = mKChartView.getTextPaint().measureText(getValueFormatter().format(getMaxValue())+" ");
+        CanvasUtils.drawTexts(canvas,x,0, CanvasUtils.XAlign.LEFT, CanvasUtils.YAlign.TOP,
+                new Pair<>(mRSI1Paint,"RSI1:" + mKChartView.formatValue(point.getRsi1()) + " "),
+                new Pair<>(mRSI2Paint,"RSI2:" + mKChartView.formatValue(point.getRsi2()) + " "),
+                new Pair<>(mRSI3Paint,"RSI3:" + mKChartView.formatValue(point.getRsi3()) + " "));
     }
 
     @Override
@@ -55,11 +62,6 @@ public class RSIDraw implements IChartDraw<IRSI> {
     @Override
     public float getMinValue(IRSI point) {
         return Math.min(point.getRsi1(), Math.min(point.getRsi2(), point.getRsi3()));
-    }
-
-    @Override
-    public IValueFormatter getValueFormatter() {
-        return new ValueFormatter();
     }
 
     public void setRSI1Color(int color) {
