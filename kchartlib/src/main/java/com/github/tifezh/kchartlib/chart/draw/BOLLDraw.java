@@ -10,6 +10,8 @@ import com.github.tifezh.kchartlib.chart.BaseChartDraw;
 import com.github.tifezh.kchartlib.chart.BaseKChartView;
 import com.github.tifezh.kchartlib.chart.entity.IBOLL;
 import com.github.tifezh.kchartlib.utils.CanvasUtils;
+import com.github.tifezh.kchartlib.utils.XAlign;
+import com.github.tifezh.kchartlib.utils.YAlign;
 
 /**
  * BOLL实现类
@@ -36,7 +38,7 @@ public class BOLLDraw extends BaseChartDraw<IBOLL> {
     public void drawValues(@NonNull Canvas canvas, int start, int stop) {
         IBOLL point = getDisplayItem();
         float x = mKChartView.getTextPaint().measureText(getValueFormatter().format(getMaxValue())+" ");
-        CanvasUtils.drawTexts(canvas,x,0, CanvasUtils.XAlign.LEFT, CanvasUtils.YAlign.TOP,
+        CanvasUtils.drawTexts(canvas,x,0, XAlign.LEFT, YAlign.TOP,
                 new Pair<>(mUpPaint,"UP:" + mKChartView.formatValue(point.getUp()) + " "),
                 new Pair<>(mMbPaint,"MB:" + mKChartView.formatValue(point.getMb()) + " "),
                 new Pair<>(mDnPaint,"DN:" + mKChartView.formatValue(point.getDn()) + " "));

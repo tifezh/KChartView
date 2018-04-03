@@ -10,6 +10,8 @@ import com.github.tifezh.kchartlib.chart.BaseChartDraw;
 import com.github.tifezh.kchartlib.chart.BaseKChartView;
 import com.github.tifezh.kchartlib.chart.entity.IKDJ;
 import com.github.tifezh.kchartlib.utils.CanvasUtils;
+import com.github.tifezh.kchartlib.utils.XAlign;
+import com.github.tifezh.kchartlib.utils.YAlign;
 
 /**
  * KDJ实现类
@@ -44,7 +46,7 @@ public class KDJDraw extends BaseChartDraw<IKDJ> {
     public void drawValues(@NonNull Canvas canvas, int start, int stop) {
         IKDJ point = getDisplayItem();
         float x = mKChartView.getTextPaint().measureText(getValueFormatter().format(getMaxValue())+" ");
-        CanvasUtils.drawTexts(canvas,x,0, CanvasUtils.XAlign.LEFT, CanvasUtils.YAlign.TOP,
+        CanvasUtils.drawTexts(canvas,x,0, XAlign.LEFT, YAlign.TOP,
                 new Pair<>(mKPaint,"K:" + mKChartView.formatValue(point.getK()) + " "),
                 new Pair<>(mDPaint,"D:" + mKChartView.formatValue(point.getD()) + " "),
                 new Pair<>(mJPaint,"J:" + mKChartView.formatValue(point.getJ()) + " "));

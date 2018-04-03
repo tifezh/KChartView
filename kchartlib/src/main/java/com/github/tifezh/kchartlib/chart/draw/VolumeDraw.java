@@ -16,6 +16,8 @@ import com.github.tifezh.kchartlib.chart.entity.IVolume;
 import com.github.tifezh.kchartlib.chart.formatter.BigValueFormatter;
 import com.github.tifezh.kchartlib.utils.CanvasUtils;
 import com.github.tifezh.kchartlib.utils.ViewUtil;
+import com.github.tifezh.kchartlib.utils.XAlign;
+import com.github.tifezh.kchartlib.utils.YAlign;
 
 /**
  * 成交量
@@ -63,7 +65,7 @@ public class VolumeDraw extends BaseChartDraw<IVolume> {
     public void drawValues(@NonNull Canvas canvas, int start, int stop) {
         IVolume point = getDisplayItem();
         float x = mKChartView.getTextPaint().measureText(getValueFormatter().format(getMaxValue())+" ");
-        CanvasUtils.drawTexts(canvas,x,0, CanvasUtils.XAlign.LEFT, CanvasUtils.YAlign.TOP,
+        CanvasUtils.drawTexts(canvas,x,0, XAlign.LEFT, YAlign.TOP,
                 new Pair<>(mKChartView.getTextPaint(),"VOL:" + getValueFormatter().format(point.getVolume()) + " "),
                 new Pair<>(ma5Paint,"MA5:" + getValueFormatter().format(point.getMA5Volume()) + " "),
                 new Pair<>(ma10Paint,"MA10:" + getValueFormatter().format(point.getMA10Volume()) + " "));

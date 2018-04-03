@@ -6,20 +6,20 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.Pair;
 
 import com.github.tifezh.kchartlib.R;
 import com.github.tifezh.kchartlib.chart.BaseChartDraw;
 import com.github.tifezh.kchartlib.chart.BaseKChartView;
+import com.github.tifezh.kchartlib.chart.base.IValueFormatter;
 import com.github.tifezh.kchartlib.chart.entity.ICandle;
 import com.github.tifezh.kchartlib.chart.entity.IKLine;
-import com.github.tifezh.kchartlib.chart.base.IChartDraw;
-import com.github.tifezh.kchartlib.chart.base.IValueFormatter;
 import com.github.tifezh.kchartlib.chart.formatter.ValueFormatter;
 import com.github.tifezh.kchartlib.utils.CanvasUtils;
 import com.github.tifezh.kchartlib.utils.ViewUtil;
+import com.github.tifezh.kchartlib.utils.XAlign;
+import com.github.tifezh.kchartlib.utils.YAlign;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +82,7 @@ public class MainDraw extends BaseChartDraw<ICandle> {
         int y=0;
         ICandle point = (IKLine) mKChartView.getItem(mKChartView.isLongPress()?mKChartView.getSelectedIndex():mKChartView.getStopIndex());
 
-        CanvasUtils.drawTexts(canvas,x,y, CanvasUtils.XAlign.LEFT, CanvasUtils.YAlign.BOTTOM,
+        CanvasUtils.drawTexts(canvas,x,y, XAlign.LEFT, YAlign.BOTTOM,
                 new Pair<>(ma5Paint,"MA5:" + mKChartView.formatValue(point.getMA5Price()) + " "),
                 new Pair<>(ma10Paint,"MA10:" + mKChartView.formatValue(point.getMA10Price()) + " "),
                 new Pair<>(ma20Paint,"MA20:" + mKChartView.formatValue(point.getMA20Price()) + " "));

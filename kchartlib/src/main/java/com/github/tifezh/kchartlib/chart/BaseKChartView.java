@@ -177,10 +177,18 @@ public abstract class BaseKChartView extends ScrollAndScaleView {
         }
         calculateValue();
         drawGird(canvas);
-        drawK(canvas);
-        drawText(canvas);
         mMainDraw.draw(canvas);
         mChildDraw.draw(canvas);
+        //画选择线
+        if (isLongPress) {
+            IKLine point = (IKLine) getItem(mSelectedIndex);
+            float x = translateXtoX(getX(mSelectedIndex));
+            float y = mMainDraw.getY(point.getClosePrice());
+            canvas.drawLine(x, mMainRect.top, x, mMainRect.bottom, mSelectedLinePaint);
+            canvas.drawLine(0, y, mWidth, y, mSelectedLinePaint);
+            canvas.drawLine(x,mChildRect.top, x,mChildRect.bottom, mSelectedLinePaint);
+        }
+        drawText(canvas);
     }
 
     /**
@@ -212,28 +220,6 @@ public abstract class BaseKChartView extends ScrollAndScaleView {
             canvas.drawLine(columnSpace * i, mMainRect.top, columnSpace * i, mMainRect.bottom, mGridPaint);
             canvas.drawLine(columnSpace * i, mChildRect.top, columnSpace * i, mChildRect.bottom, mGridPaint);
         }
-    }
-
-    /**
-     * 画k线图
-     * @param canvas
-     */
-    private void drawK(Canvas canvas) {
-        //保存之前的平移，缩放ƒ
-        canvas.save();
-        canvas.translate(mTranslateX * mScaleX, 0);
-        canvas.scale(mScaleX, 1);
-        //画选择线
-        if (isLongPress) {
-            IKLine point = (IKLine) getItem(mSelectedIndex);
-            float x = getX(mSelectedIndex);
-            float y = mMainDraw.getY(point.getClosePrice());
-            canvas.drawLine(x, mMainRect.top, x, mMainRect.bottom, mSelectedLinePaint);
-            canvas.drawLine(-mTranslateX, y, -mTranslateX + mWidth / mScaleX, y, mSelectedLinePaint);
-            canvas.drawLine(x,mChildRect.top, x,mChildRect.bottom, mSelectedLinePaint);
-        }
-        //还原 平移缩放
-        canvas.restore();
     }
 
     /**

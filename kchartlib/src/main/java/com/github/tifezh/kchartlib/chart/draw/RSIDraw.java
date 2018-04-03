@@ -4,17 +4,14 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Pair;
 
 import com.github.tifezh.kchartlib.chart.BaseChartDraw;
 import com.github.tifezh.kchartlib.chart.BaseKChartView;
-import com.github.tifezh.kchartlib.chart.entity.IMACD;
 import com.github.tifezh.kchartlib.chart.entity.IRSI;
-import com.github.tifezh.kchartlib.chart.base.IChartDraw;
-import com.github.tifezh.kchartlib.chart.base.IValueFormatter;
-import com.github.tifezh.kchartlib.chart.formatter.ValueFormatter;
 import com.github.tifezh.kchartlib.utils.CanvasUtils;
+import com.github.tifezh.kchartlib.utils.XAlign;
+import com.github.tifezh.kchartlib.utils.YAlign;
 
 /**
  * RSI实现类
@@ -48,7 +45,7 @@ public class RSIDraw extends BaseChartDraw<IRSI> {
     public void drawValues(@NonNull Canvas canvas, int start, int stop) {
         IRSI point = getDisplayItem();
         float x = mKChartView.getTextPaint().measureText(getValueFormatter().format(getMaxValue())+" ");
-        CanvasUtils.drawTexts(canvas,x,0, CanvasUtils.XAlign.LEFT, CanvasUtils.YAlign.TOP,
+        CanvasUtils.drawTexts(canvas,x,0, XAlign.LEFT, YAlign.TOP,
                 new Pair<>(mRSI1Paint,"RSI1:" + mKChartView.formatValue(point.getRsi1()) + " "),
                 new Pair<>(mRSI2Paint,"RSI2:" + mKChartView.formatValue(point.getRsi2()) + " "),
                 new Pair<>(mRSI3Paint,"RSI3:" + mKChartView.formatValue(point.getRsi3()) + " "));

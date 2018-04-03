@@ -13,21 +13,6 @@ import android.util.Pair;
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class CanvasUtils {
 
-    /**
-     * y轴方向的对齐方式
-     */
-    public enum  YAlign{
-        TOP,
-        CENTER,
-        BOTTOM
-    }
-
-    public enum XAlign{
-        LEFT,
-        CENTER,
-        RIGHT
-    }
-
     public static float getTextX(float x,Paint paint,String text,XAlign align){
         switch (align){
             case CENTER:

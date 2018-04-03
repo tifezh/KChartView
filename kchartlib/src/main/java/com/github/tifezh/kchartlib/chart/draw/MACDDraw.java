@@ -13,6 +13,8 @@ import com.github.tifezh.kchartlib.chart.BaseChartDraw;
 import com.github.tifezh.kchartlib.chart.BaseKChartView;
 import com.github.tifezh.kchartlib.chart.entity.IMACD;
 import com.github.tifezh.kchartlib.utils.CanvasUtils;
+import com.github.tifezh.kchartlib.utils.XAlign;
+import com.github.tifezh.kchartlib.utils.YAlign;
 
 /**
  * Created by tifezh on 2018/3/30.
@@ -45,7 +47,7 @@ public class MACDDraw extends BaseChartDraw<IMACD>{
     public void drawValues(@NonNull Canvas canvas,int start,int stop) {
         IMACD point = getDisplayItem();
         float x = mKChartView.getTextPaint().measureText(getValueFormatter().format(getMaxValue())+" ");
-        CanvasUtils.drawTexts(canvas,x,0, CanvasUtils.XAlign.LEFT, CanvasUtils.YAlign.TOP,
+        CanvasUtils.drawTexts(canvas,x,0, XAlign.LEFT, YAlign.TOP,
                 new Pair<>(mDIFPaint,"DIF:" + mKChartView.formatValue(point.getDif()) + " "),
                 new Pair<>(mDEAPaint,"DEA:" + mKChartView.formatValue(point.getDea()) + " "),
                 new Pair<>(mMACDPaint,"MACD:" + mKChartView.formatValue(point.getMacd()) + " "));
