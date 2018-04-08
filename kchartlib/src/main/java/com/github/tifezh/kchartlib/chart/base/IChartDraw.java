@@ -10,7 +10,7 @@ import android.support.annotation.NonNull;
  */
 
 @SuppressWarnings("unused")
-public interface IChartDraw<T> {
+public interface IChartDraw<T> extends IDraw{
 
     /**
      * 获取绘制区域的顶部
@@ -41,11 +41,6 @@ public interface IChartDraw<T> {
      * 获取绘制宽度
      */
     int getWidth();
-
-    /**
-     * 开始绘制
-     */
-    void draw(Canvas canvas);
 
     /**
      * 在绘制之前计算

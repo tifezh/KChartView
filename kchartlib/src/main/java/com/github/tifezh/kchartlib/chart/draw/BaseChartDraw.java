@@ -1,4 +1,4 @@
-package com.github.tifezh.kchartlib.chart;
+package com.github.tifezh.kchartlib.chart.draw;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -6,6 +6,7 @@ import android.graphics.Rect;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
+import com.github.tifezh.kchartlib.chart.BaseKChartView;
 import com.github.tifezh.kchartlib.chart.base.IChartDraw;
 import com.github.tifezh.kchartlib.chart.base.IValueFormatter;
 

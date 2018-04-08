@@ -9,7 +9,6 @@ import android.support.v4.content.ContextCompat;
 import android.util.Pair;
 
 import com.github.tifezh.kchartlib.R;
-import com.github.tifezh.kchartlib.chart.BaseChartDraw;
 import com.github.tifezh.kchartlib.chart.BaseKChartView;
 import com.github.tifezh.kchartlib.chart.base.IValueFormatter;
 import com.github.tifezh.kchartlib.chart.entity.IVolume;
