@@ -382,6 +382,9 @@ public abstract class BaseKChartView extends ScrollAndScaleView {
      * @return
      */
     private float getMinTranslateX() {
+        if (!isFullScreen()) {
+            return getMaxTranslateX();
+        }
         return -mDataLen + mWidth / mScaleX - mPointWidth / 2;
     }
 
@@ -390,9 +393,6 @@ public abstract class BaseKChartView extends ScrollAndScaleView {
      * @return
      */
     private float getMaxTranslateX() {
-        if (!isFullScreen()) {
-            return getMinTranslateX();
-        }
         return mPointWidth / 2;
     }
 
